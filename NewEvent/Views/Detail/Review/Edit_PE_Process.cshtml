@@ -1,0 +1,170 @@
+﻿@using NewEvent.Models;
+@{
+    ReviewItem TempItem = new ReviewItem();
+    ReviewItem BlankItem = new ReviewItem();
+    BlankItem.Status = 0;
+    BlankItem.Description = null;
+    List<ReviewItem> ItemList = Model.Item;
+}
+
+<style>
+    .datepicker-container{
+        z-index: 2000 !important;
+    }
+</style>
+<!-- Modal -->
+<div class="modal fade" id="edit_review" tabindex="-1" role="dialog" aria-labelledby="edit_review" aria-modal="true" style="z-index:1200">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+        <div class="modal-header">
+            <h5 class="modal-title" id="edit_review">Edit Review</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body" style="height:auto;">
+            <div class="row">
+            <div class="col-sm-12">
+                <form action method="post" class="form-horizontal" id="edit_review_form">
+                @try{
+                    <div class="form-group row">
+                        <label for="inputAcceptance" class="col-sm-3 col-form-label">Evaluation result</label>
+
+                        @{ TempItem = ItemList.Find(Item => Item.Type == 0) ?? BlankItem; }
+                        <div class="col-sm-9 col-form-label">
+                            <label class="mr-3">
+                                <input data-type="status" data-id="0" type="radio" name="rd-0" value="1" class="flat-red" @(TempItem.Status == 1 ? "checked" : "")>
+                                Acceptance
+                            </label>
+                            <label class="mr-3">
+                                <input data-type="status" data-id="0" type="radio" name="rd-0" value="0" class="flat-red" @(TempItem.Status == 1 ? "" : "checked")>
+                                Not, Acceptance
+                            </label>
+                        </div>
+                        @* <div class="col-sm-6 col-form-label">
+                            <label>Not Approve reason :</label>
+                            <input data-type="desc" data-id="0" type="text" name="desc-0" class="form-control " placeholder="200 character limit" value="@TempItem.Description">
+                        </div> *@
+                    </div>
+                    <div class="form-group row">
+                        <label for="inputChangeDetails" class="col-sm-3 col-form-label">Change date</label>
+                        <div class="col-sm-9 col-form-label">
+                            @{ TempItem = ItemList.Find(Item => Item.Type == 32) ?? BlankItem; }
+                            <input data-type="desc" data-id="32" data-toggle="datepicker" class="form-control required" placeholder="Select Date " autocomplete="off" name="desc-32" value="@TempItem.Description" data-inputmask-alias="datetime" data-inputmask-inputformat="dd-mm-yyyy" data-mask="99-99-9999">
+                            <div data-toggle="datepicker"></div>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label for="inputChangeDetails" class="col-sm-3 col-form-label">Change details</label>
+                        <div class="col-sm-9 col-form-label">
+                            @{ TempItem = ItemList.Find(Item => Item.Type == 1) ?? BlankItem; }
+                            <input data-type="desc" data-id="1" type="text" name="desc-1" class="form-control required" placeholder="500 character limit" value="@TempItem.Description">
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label for="inputProDesRe" class="col-sm-3 col-form-label">Process design review</label>
+                        <div class="col-sm-3 col-form-label">
+                            <label class="mr-3">
+                            @{ TempItem = ItemList.Find(Item => Item.Type == 2) ?? BlankItem; }
+                                <input data-type="status" data-id="2" type="radio" name="rd-2" value="1" class="flat-red" @(TempItem.Status == 1 ? "checked" : "")>
+                                Yes
+                            </label>
+                            <label class="mr-3">
+                                <input data-type="status" data-id="2" type="radio" name="rd-2" value="0" class="flat-red" @(TempItem.Status == 1 ? "" : "checked")>
+                                No, Acceptance
+                            </label>
+                        </div>
+                        <div class="col-sm-6 col-form-label">
+                            <label>if yes,inform to NS   Due date :</label>
+                            <textarea data-type="desc" data-id="2" name="desc-2" class="form-control " placeholder=""> @(TempItem != null ? @TempItem.Description : "")</textarea>
+                        </div>
+                    </div>
+                    @* <div class="form-group row">
+                        <label for="inputEffeDoc" class="col-sm-3 col-form-label">Effected to Document (Control Plan ,FMEA)</label>
+                        <div class="col-sm-3 col-form-label">
+                            @{ TempItem = ItemList.Find(Item => Item.Type == 3) ?? BlankItem; }
+                            <label class="mr-3">
+                                <input data-type="status" data-id="3" type="radio" name="rd-3" value="1" class="flat-red" @(TempItem.Status == 1 ? "checked" : "")>
+                                Yes
+                            </label>
+                            <label class="mr-3">
+                                <input data-type="status" data-id="3" type="radio" name="rd-3" value="0" class="flat-red" @(TempItem.Status == 1 ? "" : "checked")>
+                                No, Acceptance
+                            </label>
+                        </div>
+                        <div class="col-sm-3 col-form-label">
+                            @{ TempItem = ItemList.Find(Item => Item.Type == 29) ?? BlankItem; }
+                            <label>Control Plan no. :</label>
+                            <textarea data-type="desc" data-id="29" name="desc-29" class="form-control " > @(TempItem != null ? TempItem.Description : "") </textarea>
+                        </div>
+                        <div class="col-sm-3 col-form-label">
+                            @{ TempItem = ItemList.Find(Item => Item.Type == 30) ?? BlankItem; }
+                            <label>FMEA No. :</label>
+                            <textarea data-type="desc" data-id="30" name="desc-30" class="form-control " placeholder="">@(TempItem != null ? TempItem.Description : "")</textarea>
+                        </div>
+                    </div> *@
+                    <div class="form-group row">
+                        <label for="inputSkills" class="col-sm-3 col-form-label">Due Date</label>
+                        <div class="col-sm-9 col-form-label">
+                            @{ TempItem = ItemList.Find(Item => Item.Type == 31) ?? BlankItem; }
+                            <input data-type="desc" data-id="31" data-toggle="datepicker" class="form-control required" placeholder="Select Date " autocomplete="off" name="desc-31" value="@TempItem.Description" data-inputmask-alias="datetime" data-inputmask-inputformat="dd-mm-yyyy" data-mask="99-99-9999">
+                            <div data-toggle="datepicker"></div>
+                            @* <input type="text" name="desc-32" class="form-control" placeholder="Enter Date "> *@
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label for="inputSkills" class="col-sm-3 col-form-label">Others  (Please specify)</label>
+                        <div class="col-sm-9 col-form-label">
+                            @{ TempItem = ItemList.Find(Item => Item.Type == 22) ?? BlankItem; }
+                            <input data-type="desc" data-id="22" name="desc-22" type="text" class="form-control required" placeholder="500 character limit" value="@TempItem.Description">
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label for="inputReqReTrial" class="col-sm-3 col-form-label">Request Trial</label>
+                        <div class="col-sm-3 col-form-label">
+                            @{ TempItem = ItemList.Find(Item => Item.Type == 24) ?? BlankItem; }
+                            <label class="mr-3">
+                                <input data-type="status" data-id="24" type="radio" name="rd-24" value="1" class="flat-red" @(TempItem.Status == 1 ? "checked" : "")>
+                                Yes
+                            </label>
+                            <label class="mr-3">
+                                <input data-type="status" data-id="24" type="radio" name="rd-24" value="0" class="flat-red" @(TempItem.Status == 1 ? "" : "checked")>
+                                No, Acceptance
+                            </label>
+                        </div>
+                        <div class="col-sm-6 col-form-label">
+                            <label>Details :</label>
+                            <textarea data-type="desc" data-id="24" class="form-control " name="desc-24">@(TempItem != null ? TempItem.Description : "")</textarea>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label for="inputSkills" class="col-sm-3 col-form-label">Attach File</label>
+                        <div class="col-sm-9">
+                            <input type="file" class="my-pond" name="filepond_alt" />
+                            @if(Model.FileList != null && Model.FileList.Count > 0 ){
+                                <div class="card-footer bg-white">
+                                    @{ ViewBag.DisableFileList = true; }
+                                    @Html.Partial("~/Views/Helper/FileList.cshtml",Model.FileList as List<FileItem>)
+                                </div>
+                            }
+                            @* <input type="file" name="filepond" data-max-files="10" required> *@
+                        </div>
+                    </div>
+                }catch(Exception err){
+
+                }
+                </form>
+            </div>
+        </div>
+        </div>
+
+        <div class="modal-footer">
+        <span class="text-danger mr-auto" id="validate-warning" style="display:none">กรุณาระบุข้อมูล/รายละเอียดให้ครบถ้วน</span>
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">
+                Close
+            </button>
+            <button type="submit" id="submit_edit_review" form="edit_review_form" class="btn btn-info">
+                Submit
+            </button>
+        </div>
+        </div>
+    </div>
+</div>

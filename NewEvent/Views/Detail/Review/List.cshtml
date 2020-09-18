@@ -1,0 +1,170 @@
+﻿@using NewEvent.Models
+@{
+    var str_date = "05 มิถุนายน 2020";
+    string department = (string)Session["Department"];
+    List<Review> ElementList = Model;
+    var Topic = ViewData["Topic"] as TopicAlt;
+}
+
+@* /* --------------------- Show list that related to user --------------------- */ *@
+@if(ElementList.Exists(e => e.Department == department)){
+        Review Element = ElementList.Find(e => e.Department == department);
+        if(Element.Item.Count != 0){
+            @DefaultList(ElementList, Element, department)
+        }
+}
+
+@* /* --------------------- Show list of pending department -------------------- */ *@
+@foreach(var Element in Topic.RelatedListAlt){
+    if(Element.Review == 0 && !ViewBag.QCAudit.Contains(Element.Department )){
+    <div>
+        <i class="fa fa-hourglass-half  bg-secondary blue-tooltip"></i>
+        <div class="timeline-item card">
+            <div class="timeline-header card-header d-flex" style="padding: 10px 10px 5px 10px;"  data-card-widget="collapse">
+                    <h6 class="mr-auto" style="font-family:Kanit"> 
+                        @Element.Department
+                        <span class='badge badge-pill badge-secondary'>PENDING
+                                <i class='fa fa-hourglass-half'></i>
+                        </span> </h6>
+            </div>
+        </div>  
+    </div>
+    }
+}
+
+@* /* ---------------------- Show list that already review --------------------- */ *@
+@foreach(var Element in Model){
+    if(Element.Department != department){
+        if(Element.Item.Count != 0){
+            @DefaultList(ElementList, Element, department)
+        }
+    }
+}
+
+@helper DefaultList(List<Review> ElementList, Review Element, string department){
+    var Topic = ViewData["Topic"] as TopicAlt;
+
+<div>
+    @{var WaitingForCustomer = false;}
+    @* <i class="fas bg-primary" style="font-family:Kanit !important">@Html.DisplayFor(model => Element.Department)</i> *@
+    @if(Element.Status == 1){
+        <i class="fas fa-check bg-primary blue-tooltip"></i>
+    }else if(Element.Status == 3){
+        <i class="fas fa-file-signature bg-warning blue-tooltip"></i>
+    }else if(Element.Status == 4){
+        <i class="fas fa-info bg-warning blue-tooltip"></i>
+    }else{
+        <i class="fas fa-question bg-error blue-tooltip"></i>
+    }
+    <div class="timeline-item card">
+        <div class="timeline-header card-header d-flex" style="padding: 10px 10px 5px 10px;"  data-card-widget="collapse">
+                @{
+                    @* var approve_status = (Element.ApprovedBy != null) ? "<span class='text-success'>APPROVED</span>": "<span class='text-secondary'>PENDING</span>"; *@
+                    var approve_status = 
+                            $@"<span class='badge badge-pill badge-warning'>WAITING FOR APPROVE
+                                    <i class='fas fa-file-signature '></i>
+                            </span>";
+                    if(Element.ApprovedBy != null && Element.ApprovedBy != ""){
+                    approve_status = 
+                            $@"<span class='badge badge-pill badge-success'>APPROVED
+                                    <i class='fas fa-check'></i>
+                            </span>";
+                    }
+
+                    if(Element.Item.Exists(e => e.Status == 13)){
+                    approve_status = 
+                            $@"<span class='badge badge-pill badge-warning'>WAITING FOR CUSTOMER
+                                    <i class='fas fa-file-signature '></i>
+                            </span>";
+                    }
+
+                    var dept_status = (Element.Department == department) ? $"<span class='badge badge-pill badge-primary'> YOUR DEPARTMENT <i class='fas fa-pencil-alt'></i> </span>" : "";
+                }
+                <h6 class="mr-auto" style="font-family:Kanit"> @Element.Department @Html.Raw(HttpUtility.HtmlDecode(@dept_status)) @Html.Raw(HttpUtility.HtmlDecode(@approve_status)) </h6>
+                <button type="button" class="btn btn-tool arrow-collapse" data-card-widget="collapse"><i class="fas fa-chevron-down"></i></button>
+        </div>
+
+        <div class="timeline-body card-body">
+                <form class="form-horizontal">
+                    @{var ElementItem = Element.Item;}
+                    <div class="row">
+                        <label class="col-sm-4 col-form-label" style="text-align:right">
+                                Issued By :
+                        </label>
+                        <div class="col-sm-8 col-form-label">
+                            <span>
+                                @Element.Profile.FullName (@Element.Date)
+                            </span>
+                        </div>
+                    </div>
+                    @if(Element.ApprovedBy != "" && Element.ApprovedBy != null){
+                    <div class="row">
+                        <label class="col-sm-4 col-form-label" style="text-align:right">
+                                Approved By :
+                        </label>
+                        <div class="col-sm-8 col-form-label">
+                            <span>
+                                @Element.Approver.FullName (@Element.ApprovedDate) <span class='badge badge-pill badge-success'><i class='fas fa-check'></i></span>
+                            </span>
+                        </div>
+                    </div>
+                    }
+                    @foreach(var Item in ElementItem){
+                        var temp_status = (String)null;
+                        if(Item.Status == 1){
+                            temp_status = "Yes";
+                        }else if(Item.Status == 0){
+                            temp_status = "No";
+                        }else if(Item.Status == 13){
+                            temp_status = "Waiting for customer";
+                            WaitingForCustomer = true;
+                        }else if(Item.Status == null){
+                            temp_status = "-";
+                        }
+                    <div class="row">
+                        <label class="col-sm-4 col-form-label" style="text-align:right">
+                            @Item.Name :
+                        </label>
+                        <div class="col-sm-8 col-form-label">
+                            @if(temp_status != null && Item.Description != ""){
+                                if(temp_status != "-"){
+                                    <span>@temp_status</span>
+                                    <span>,</span>
+                                }
+                                <span>@Item.Description</span><br>
+                            }else if(temp_status != null && Item.Description == ""){
+                                <span>@temp_status</span>
+                            }
+                        </div>
+                    </div>
+                    }
+                    
+                </form>
+
+            @if(Element.FileList != null && Element.FileList.Count != 0){
+                <div class="col-sm-12 d-flex mt-4 file-list">
+                    @Html.Partial("~/Views/Helper/FileList.cshtml",Element.FileList as List<FileItem>)
+                </div>
+            }
+        </div>
+        @{
+            var isDepartment = (department == Element.Department);
+            if((isDepartment) && ((int) Session["Status"] == 7 || (int) Session["Status"] == 8)){
+            <hr style="margin-top:0px !important">
+            <div class="timeline-footer">
+                <div class="float-right ">
+                    <button class="btn btn-warning btn-sm rv-edit" id="edit_rv" data-toggle="modal" data-target="#edit_review" value="@Element.ID">Edit</button>
+                    @if((ViewBag.isQC || (ViewBag.isPEProcess && ViewBag.isInternal)) && ViewBag.isApprover){
+                        <button class="btn btn-info btn-sm rv-related" id="related_rv" data-toggle="modal" data-target="#related_rv" value="@Element.ID">Add Related</button>
+                        <button type="button" id="reject" class="btn btn-danger btn-sm">Reject</button>
+                    }
+                        @if(ViewBag.isApprover && ((Element.Status !=1 && !ViewBag.isQC) || (!Topic.RelatedListAlt.Exists(e => e.Review == 0 && !ViewBag.QCAudit.Contains(e.Department )) && ViewBag.isQC && !WaitingForCustomer))){ 
+                            <button class="btn btn-info btn-sm mr-1 rv-approve" value="@Element.ID">Approve</button>
+                        }
+                </div>
+            </div>
+            }
+        }
+    </div>  
+</div>
+}

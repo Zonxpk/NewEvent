@@ -1,0 +1,118 @@
+﻿@using NewEvent.Models;
+@{
+    ReviewItem TempItem = new ReviewItem();
+    ReviewItem BlankItem = new ReviewItem();
+    BlankItem.Status = 0;
+    BlankItem.Description = null;
+    List<ReviewItem> ItemList = Model.Item;
+}
+<!-- Modal -->
+<div class="modal fade" id="edit_review" tabindex="-1" role="dialog" aria-labelledby="edit_review" aria-modal="true" style="z-index:1200">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+        <div class="modal-header">
+            <h5 class="modal-title" id="edit_review">Edit Review</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body" style="height:auto;">
+            <div class="row">
+            <div class="col-sm-12">
+                <form action method="post" class="form-horizontal" id="edit_review_form">
+                    <div   div class="row">
+                    <label for="inputAcceptance" class="col-sm-5 col-form-label">Submit sample/Trial to customer</label>
+                        @{ TempItem = ItemList.Find(Item => Item.Type == 25) ?? BlankItem; }
+                        <div class="col-sm-7 col-form-label">
+                            <label class="mr-3">
+                                <input data-type="status" data-id="25" type="radio" name="rd-25" value="1" class="flat-red" @(TempItem.Status == 1 ? "checked" : "")>
+                                Yes
+                            </label>
+                            <label class="mr-3">
+                                <input data-type="status" data-id="25" type="radio" name="rd-25" value="0" class="flat-red" @(TempItem.Status == 0 ? "checked" : "")>
+                                No
+                            </label>
+                            <label class="mr-3">
+                                <input data-type="status" data-id="25" type="radio" name="rd-25" value="13" class="flat-red"  @(TempItem.Status == 13 ? "checked" : "")>
+                                Waiting for customer
+                            </label>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <div class="col-sm-5"></div>
+                        <div class="col-sm-7 col-form-label">
+                            @* <label>If Yes, Submit sample Date :</label> *@
+                            @* <input data-type="desc" data-id="25" type="text" name="desc-25" class="form-control" placeholder="200 character limit" > *@
+                            <input data-type="desc" data-id="25" type="text" name="desc-25" class="form-control" placeholder="If Yes, Submit sample Date" value="@(TempItem != null ? TempItem.Description : "")">
+                        </div>
+                    </div>
+
+
+                    <div class="row">
+                        <label for="inputAcceptance" class="col-sm-5 col-form-label">Inform to customer</label>
+                        @{ TempItem = ItemList.Find(Item => Item.Type == 26) ?? BlankItem; }
+                        <div class="col-sm-7 col-form-label">
+                            <label class="mr-3">
+                                <input data-type="status" data-id="26" type="radio" name="rd-26" value="1" class="flat-red" @(TempItem.Status == 1 ? "checked" : "")>
+                                Yes
+                            </label>
+                            <label class="mr-3">
+                                <input data-type="status" data-id="26" type="radio" name="rd-26" value="0" class="flat-red" @(TempItem.Status == 0 ? "checked" : "")>
+                                No
+                            </label>
+                            <label class="mr-3">
+                                <input data-type="status" data-id="26" type="radio" name="rd-26" value="13" class="flat-red" @(TempItem.Status == 13 ? "checked" : "")>
+                                Waiting for customer
+                            </label>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <div class="col-sm-5"></div>
+                        <div class="col-sm-7 col-form-label">
+                            @* <label>Details IPP:</label> *@
+                            @* <input data-type="desc" data-id="26" type="text" name="desc-26" class="form-control" placeholder="200 character limit" > *@
+                            <input data-type="desc" data-id="26" type="text" name="desc-26" class="form-control" placeholder="Details IPP" value="@(TempItem != null ? TempItem.Description : "")" >
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        <label for="inputAcceptance" class="col-sm-5 col-form-label">Customer Audit</label>
+                        @{ TempItem = ItemList.Find(Item => Item.Type == 27) ?? BlankItem; }
+                        <div class="col-sm-7 col-form-label">
+                            <label class="mr-3">
+                                <input data-type="status" data-id="27" type="radio" name="rd-27" value="1" class="flat-red" @(TempItem.Status == 1 ? "checked" : "")>
+                                Yes
+                            </label>
+                            <label class="mr-3">
+                                <input data-type="status" data-id="27" type="radio" name="rd-27" value="0" class="flat-red" @(TempItem.Status == 0 ? "checked" : "")>
+                                No
+                            </label>
+                            <label class="mr-3">
+                                <input data-type="status" data-id="27" type="radio" name="rd-27" value="13" class="flat-red" @(TempItem.Status == 13 ? "checked" : "")>
+                                Waiting for customer
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        <label for="inputSkills" class="col-sm-3 col-form-label">Suggestion from QA</label>
+                        <div class="col-sm-9">
+                            @{ TempItem = ItemList.Find(Item => Item.Type == 28) ?? BlankItem; }
+                            <textarea data-type="desc" data-id="28" class="form-control required" name="desc-28" placeholder="">@(TempItem != null ? TempItem.Description : "")</textarea>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+        </div>
+
+        <div class="modal-footer">
+        <span class="text-danger mr-auto" id="validate-warning" style="display:none">กรุณาระบุข้อมูล/รายละเอียดให้ครบถ้วน</span>
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">
+                Close
+            </button>
+            <button type="submit" id="submit_edit_review" form="edit_review_form" class="btn btn-info">
+                Submit
+            </button>
+        </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,130 @@
+﻿
+    <!DOCTYPE html>
+    <html>
+    @{
+        ViewBag.Title = "Index";
+        Layout = "";
+        var RedirectMode = (string) Session["RedirectMode"] ?? "LogIn";
+    }
+    <head>
+        @Scripts.Render("~/bundles/modernizr")
+        @Scripts.Render("~/bundles/jquery")
+        @Scripts.Render("~/bundles/bootstrap")
+        @Scripts.Render("~/bundles/sweetalert")
+
+        <style>
+            .swal-button--confirm, .btn-info {
+                background-color: #007bff;
+                border-color: #007bff;
+            }
+        </style>
+        <script type="text/javascript">
+            var CheckUserPath = '@Url.Action("CheckUser", "Login")';
+            var CheckAdminPath = '@Url.Action("CheckAdmin", "Login")';
+            var GetDepartmentPath = '@Url.Action("GetDepartment", "Login")';
+            var SetDepartmentPath = '@Url.Action("SetDepartment", "Login")';
+            var SetDepartmentAltPath = '@Url.Action("SetDepartmentAlt", "Login")';
+            var GetDepartmentListByUserIDPath = '@Url.Action("GetDepartmentListByUserID", "Login")';
+            var NavigateToHome = '@Url.Action("Index", "Home")';
+            var UrlTopicID = '@((string) Session["RedirectID"] != null ? Session["RedirectID"].ToString() : "")';
+            var NavigateToPrevious = `@((string) Session["RedirectID"] != null ? @Url.Action("Index", RedirectMode , new { id = Session["RedirectID"].ToString()}) : @Url.Action("Index", RedirectMode))`;
+            var GetDepartmentListPath = '@Url.Action("GetDepartment", "Request")';
+
+        </script>
+
+        <script src="~/Scripts/login/login.js"></script>
+        <script src="~/Scripts/Shared/Shared.js"></script>
+
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title>New Event System | Log in</title>
+        <!-- Tell the browser to be responsive to screen width -->
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        
+        @Styles.Render("~/Content/css")
+
+        <!-- Ionicons -->
+        @*<link rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">*@
+        <link rel="stylesheet" href="~/tmp/icon-internet/icon-internet.css">
+        <!-- Theme style -->
+        <link rel="stylesheet" href="~/tmp/dist/css/adminlte.min.css">
+        
+        <script src="~/Plugin/ldLoader/ldld.min.js"></script>
+        <link rel="stylesheet" href="~/Plugin/ldLoader/ldbtn.min.css">
+        <link rel="stylesheet" href="~/Plugin/ldLoader/loading.min.css">
+        <!-- Google Font: Source Sans Pro -->
+        @*<link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700" rel="stylesheet">*@
+
+        
+    </head>
+
+    <body>
+        <div class="hold-transition login-page">
+            <div class="login-box">
+                <div class="login-logo">
+                    @*<a href="http://172.27.170.23/support/"><b>Change Control</b> System</a>*@
+                    @* <a href="http://172.27.170.23/support/"> *@
+                    <a href="#">
+                        <img src="~/tmp/dist/img/change_Black.png" alt="AdminLTE Logo" class="brand-image " style="opacity: .8">
+                    </a>
+                </div>
+                <!-- /.login-logo -->
+                <div class="card">
+                    <div class="card-body login-card-body">
+                        <p class="login-box-msg">Sign in to start your session</p>
+
+
+                        <div class="input-group mb-3">
+                            <input id="user" class="form-control" placeholder="User">
+                            <div class="input-group-append">
+                                <div class="input-group-text">
+                                    <span class="fas fa-envelope"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="input-group mb-3">
+                            <input type="password" id="pass" class="form-control" placeholder="Password">
+                            <div class="input-group-append">
+                                <div class="input-group-text">
+                                    <span class="fas fa-lock"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-7">
+                                <div class="icheck-primary">
+                                    <input type="checkbox" id="remember">
+                                    <label for="remember">
+                                        Remember Me
+                                    </label>
+                                </div>
+                            </div>
+                            <!-- /.col -->
+                            <div class="col-5">
+                                <button id="signin-btn" class="btn btn-primary btn-block ld-ext-right">
+                                    Submit
+                                    <div class="ld ld-spin ld-ring"></div>
+                                </button>
+                                @* <button id="click" class="btn btn-primary btn-block">Sign In</button> *@
+                            </div>
+                            <!-- /.col -->
+                        </div>
+                        <br />
+                        <p class="mb-0" style= "margin-top: -15px;">
+                      
+                            <a href="~/manual.pdf" target="_blank"><i class='fa fa-book'></i> คู่มือการใช้งานระบบ New Event System</a><br />
+                            <note>*Not support IE Suggest chrome</note> 
+
+                        <p class="mb-0">
+                        @* <note>*Not support internet explorer <br>Suggest chrome</note> *@
+                            @* <a href="http://172.27.170.23/support/" target="_blank" class="text-center">Register a new membership</a> *@
+                        </p>
+                    </div>
+                    <!-- /.login-card-body -->
+                </div>
+            </div>
+            <!-- /.login-box -->
+        </div>
+    </body>
+
+    </html>

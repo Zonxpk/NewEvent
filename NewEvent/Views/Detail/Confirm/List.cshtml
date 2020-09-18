@@ -1,0 +1,133 @@
+﻿@using NewEvent.Models
+@{
+    var str_date = "05 มิถุนายน 2020";
+    string department = (string)Session["Department"];
+    List<Confirm> ElementList = Model as List<Confirm>;
+    var Topic = ViewData["Topic"] as TopicAlt;
+}
+
+@* /* --------------------- Show list that related to user --------------------- */ *@
+@if(ElementList.Exists(e => e.Department == department)){
+        Confirm Element = ElementList.Find(e => e.Department == department);
+        if(Element != null){
+            @DefaultList(ElementList, Element, department)
+        }
+}
+
+@* /* --------------------- Show list of pending department -------------------- */ *@
+@foreach(var Element in Topic.RelatedListAlt){
+    if(Element.Confirm == 0 && !ViewBag.QCAudit.Contains(Element.Department ) && ViewBag.cf_list.Contains(Element.Department)){
+    <div>
+        <i class="fa fa-hourglass-half  bg-secondary blue-tooltip"></i>
+        <div class="timeline-item card">
+            <div class="timeline-header card-header d-flex" style="padding: 10px 10px 5px 10px;"  data-card-widget="collapse">
+                    <h6 class="mr-auto" style="font-family:Kanit"> 
+                        @Element.Department
+                        <span class='badge badge-pill badge-secondary'>PENDING
+                                <i class='fa fa-hourglass-half '></i>
+                        </span> </h6>
+            </div>
+        </div>  
+    </div>
+    }
+}
+@* /* ---------------------- Show list that already confirm --------------------- */ *@
+@foreach(var Element in Model){
+    if(Element != null){
+        if(Element.Department != department){
+            @DefaultList(ElementList, Element, department)
+        }
+    }
+}
+
+@helper DefaultList(List<Confirm> ElementList, Confirm Element, string department){
+    <div>
+    @* <i class="fas bg-primary" style="font-family:Kanit !important">@Html.DisplayFor(model => Element.Department)</i> *@
+    @if(Element.Status == 1){
+        <i class="fas fa-check bg-primary blue-tooltip" data-toggle="tooltip" data-placement="top" title="Approved"></i>
+    }else if(Element.Status == 3){
+        <i class="far fa-clock bg-warning blue-tooltip" data-toggle="tooltip" data-placement="top" title="Waiting for approve"></i>
+    }else if(Element.Status == 4){
+        <i class="fas fa-info bg-warning blue-tooltip" data-toggle="tooltip" data-placement="top" title="Need more information"></i>
+    }else{
+        <i class="fas fa-question bg-error blue-tooltip" data-toggle="tooltip" data-placement="top" title="Unknown"></i>
+    }
+    <div class="timeline-item card">
+        <div class="timeline-header card-header d-flex" style="padding: 10px 10px 5px 10px;"  data-card-widget="collapse">
+                @{
+                    @* var approve_status = (Confirm.ApprovedBy != null) ? "<span class='text-success'>APPROVED</span>": "<span class='text-secondary'>PENDING</span>"; *@
+                    var approve_status = 
+                            $@"<span class='badge badge-pill badge-warning'>WAITING FOR APPROVE
+                                    <i class='fas fa-clock'></i>
+                            </span>";
+                    if(Element.ApprovedBy != null && Element.ApprovedBy != ""){
+                    approve_status = 
+                            $@"<span class='badge badge-pill badge-success'>APPROVED
+                                    <i class='fas fa-check'></i>
+                            </span>";
+                    }
+
+                    var dept_status = (Element.Department == department) ? $"<span class='badge badge-pill badge-primary'> YOUR DEPARTMENT <i class='fas fa-pencil-alt'></i> </span>" : "";
+                }
+                <h6 class="mr-auto" style="font-family:Kanit"> @Element.Department @Html.Raw(HttpUtility.HtmlDecode(@dept_status)) @Html.Raw(HttpUtility.HtmlDecode(@approve_status)) </h6>
+                <button type="button" class="btn btn-tool arrow-collapse" data-card-widget="collapse"><i class="fas fa-chevron-down"></i></button>
+        </div>
+
+        <div class="timeline-body card-body">
+                <form class="form-horizontal">
+                    <div class="row">
+                        <label class="col-sm-4 col-form-label" style="text-align:right">
+                                Confirmed By :
+                        </label>
+                        <div class="col-sm-8 col-form-label">
+                            <span>
+                                @Element.Profile.FullName (@Element.Date)
+                            </span>
+                        </div>
+                    </div>
+                    @if(Element.ApprovedBy != "" && Element.ApprovedBy != null){
+                    <div class="row">
+                        <label class="col-sm-4 col-form-label" style="text-align:right">
+                                Approved By :
+                        </label>
+                        <div class="col-sm-8 col-form-label">
+                            <span>
+                                @Element.Approver.FullName (@Element.ApprovedDate) <span class='badge badge-pill badge-success'><i class='fas fa-check'></i></span>
+                            </span>
+                        </div>
+                    </div>
+                    }
+                    <div class="row">
+                        <label class="col-sm-4 col-form-label" style="text-align:right">
+                            Detail : 
+                        </label>
+                        <div class="col-sm-8 col-form-label">
+                            <span>@Element.Detail</span>
+                        </div>
+                    </div>
+                </form>
+
+                @if(Element.FileList != null && Element.FileList.Count != 0){
+                    <div class="col-sm-12 d-flex mt-4 file-list">
+                        @Html.Partial("~/Views/Helper/FileList.cshtml",Element.FileList as List<FileItem>)
+                
+                    </div>
+                }
+        </div>
+        @{
+            var isDepartment = (department == Element.Department);
+            if((isDepartment) && (int) Session["Status"] == 10){
+            <hr style="margin-top:0px !important">
+            <div class="timeline-footer">
+                <div class="float-right ">
+                    <a href="#" class="btn btn-warning btn-sm cf-edit"id="edit_cf" data-toggle="modal" data-target="#edit_confirm" value="@Element.ID" >Edit</a>
+                        @if(ViewBag.isApprover && ((Element.Status !=1 && !ViewBag.isQC) || (!ElementList.Exists(e => e.Status == 3 && !ViewBag.QCAudit.Contains(e.Department )) && ViewBag.isQC))){ 
+                            <button a href="#" class="btn btn-info btn-sm mr-1 cf-approve" value="@Element.ID">Approve</button> 
+                        }
+                </div>
+            </div>
+            }
+        }
+    </div>  
+</div>
+}

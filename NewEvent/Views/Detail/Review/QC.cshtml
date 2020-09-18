@@ -1,0 +1,99 @@
+﻿<br><hr>
+<h1>Review Items</h1><br>
+<form class="form-horizontal" action="javascript:void(0);" id="review">
+
+    <div class="row">
+        <label for="inputAcceptance" class="col-sm-5 col-form-label">Submit sample/Trial to customer</label>
+
+        <div class="col-sm-7 col-form-label">
+            <label class="mr-3">
+                <input data-type="status" data-id="25" type="radio" name="rd-25" value="1" class="flat-red" checked>
+                Yes
+            </label>
+            <label class="mr-3">
+                <input data-type="status" data-id="25" type="radio" name="rd-25" value="0" class="flat-red" >
+                No
+            </label>
+            <label class="mr-3">
+                <input data-type="status" data-id="25" type="radio" name="rd-25" value="13" class="flat-red" >
+                Waiting for customer
+            </label>
+        </div>
+    </div>
+    <div class="form-group row">
+        <div class="col-sm-5"></div>
+        <div class="col-sm-7 col-form-label">
+            @* <label>If Yes, Submit sample Date :</label> *@
+            @* <input data-type="desc" data-id="25" type="text" name="desc-25" class="form-control" placeholder="200 character limit" > *@
+            <input data-type="desc" data-id="25" type="text" name="desc-25" class="form-control" placeholder="If Yes, Submit sample Date" >
+        </div>
+    </div>
+
+    <div class="row">
+        <label for="inputAcceptance" class="col-sm-5 col-form-label">Inform to customer</label>
+        <div class="col-sm-7 col-form-label">
+            <label class="mr-3">
+                <input data-type="status" data-id="26" type="radio" name="rd-26" value="1" class="flat-red" checked>
+                Yes
+            </label>
+            <label class="mr-3">
+                <input data-type="status" data-id="26" type="radio" name="rd-26" value="0" class="flat-red" >
+                No
+            </label>
+            <label class="mr-3">
+                <input data-type="status" data-id="26" type="radio" name="rd-26" value="13" class="flat-red" >
+                Waiting for customer
+            </label>
+        </div>
+    </div>
+    <div class="form-group row">
+        <div class="col-sm-5"></div>
+        <div class="col-sm-7 col-form-label">
+            @* <label>Details IPP:</label> *@
+            @* <input data-type="desc" data-id="26" type="text" name="desc-26" class="form-control" placeholder="200 character limit" > *@
+            <input data-type="desc" data-id="26" type="text" name="desc-26" class="form-control" placeholder="Details IPP   " >
+        </div>
+    </div>
+
+    <div class="form-group row">
+        <label for="inputAcceptance" class="col-sm-5 col-form-label">Customer Audit</label>
+
+        <div class="col-sm-7 col-form-label">
+            <label class="mr-3">
+                <input data-type="status" data-id="27" type="radio" name="rd-27" value="1" class="flat-red" checked>
+                Yes
+            </label>
+            <label class="mr-3">
+                <input data-type="status" data-id="27" type="radio" name="rd-27" value="0" class="flat-red">
+                No
+            </label>
+            <label class="mr-3">
+                <input data-type="status" data-id="27" type="radio" name="rd-27" value="13" class="flat-red" >
+                Waiting for customer
+            </label>
+        </div>
+    </div>
+
+    <div class="form-group row">
+        <label for="inputSkills" class="col-sm-5 col-form-label ">Suggestion from QA</label>
+        <div class="col-sm-7">
+            <textarea data-type="desc" data-id="28" class="form-control required" name="desc-28" placeholder=""></textarea>
+        </div>
+    </div>
+
+    <br>
+    <hr>
+    <br>
+    <div class="form-group row">
+        <div class="col-sm-12">
+            <span class="text-danger" id="validate-warning" style="display:none">กรุณาระบุข้อมูล/รายละเอียดให้ครบถ้วน</span>
+            <div class="float-right">
+                @if(ViewBag.isApprover){
+                    <a class="btn btn-warning rv-related" id="related_rv" data-toggle="modal" data-target="#related_rv">Related</a>
+                    <button type="button" id="reject" class="btn btn-danger">Reject</button>
+                }
+                <button type="submit" class="btn btn-info">Submit</button>
+            </div>
+        </div>
+    </div>
+</form>

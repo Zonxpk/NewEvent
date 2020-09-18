@@ -1,0 +1,706 @@
+﻿@using System.Data
+@using NewEvent.Models;
+@using NewEvent.Helpers
+@using System.Reflection;
+@model DataSet
+@{
+    ViewBag.Title = "New Event System | Requset";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    List<ChangeItem> ChangeItems = ViewData["FormChangeItem"] as List<ChangeItem>;
+    List<ProductType> ProductTypes = ViewData["FormProductType"] as List<ProductType>;
+    List<DepartmentList> DepartmentLists = ViewData["DepartmentList"] as List<DepartmentList>;
+    TopicAlt Topic = ViewData["Topic"] as TopicAlt;
+
+    var eTopic_id = ViewData["eTopic_id"];
+    var iTopic_id = ViewData["iTopic_id"];
+    var isInternal = true;
+    if(Topic != null){
+        isInternal = Topic. Type.Replace(" ", "") == "Internal"; //Default when insert
+    }
+    var isEditMode = (Topic != null); //Default when insert
+    Session["isEditMode"] = isEditMode;
+
+    List<RelatedAlt> RelatedList = new List<RelatedAlt>();
+}
+@Scripts.Render("~/bundles/jquery")
+
+
+<script type="text/javascript">
+    InsertRequestPath = '@Url.Action("Submit", "Request")';
+    UpdateRequestPath = '@Url.Action("UpdateRequest", "Request")';
+    InsertRelatedPath = '@Url.Action("InsertRelated", "Request")';
+    InsertFilePath = '@Url.Action("InsertFile", "Request")';
+    UpdateFilePath = '@Url.Action("UpdateFile", "Request")';
+    remove = '@Url.Action("RemoveDATA", "Request")';
+    sendmail = '@Url.Action("AddListMail", "Request")';
+    GetSummernote = '@Url.Action("GetSummernote", "Request")';
+    InsertFilePath = '@Url.Action("InsertFile", "Request")';
+    DepartmentLists = @Html.Raw(Json.Encode(DepartmentLists));
+    isEditMode = '@Session["isEditMode"]';
+    var RedirectDetail = '@Url.Action("Index", "Detail")';
+    var GenerateMailPath = '@Url.Action("GenerateMail", "Mail")';
+    var InsertOtherChangeItemPath = '@Url.Action("InsertOtherChangeItem", "Request")';
+    var InsertOtherProductTypePath = '@Url.Action("InsertOtherProductType", "Request")';
+    var Timing = '@(Topic != null ? Topic.Timing : null) ';
+</script>
+
+<script>
+    $(document).ready(function () {
+        console.log("Request");
+        $("#menu2-1").addClass('active');
+        $('#menu1-1').removeClass('active');
+        $('#menu3-1').removeClass('active');
+
+    });
+</script>
+
+<style>
+
+    .fileuploader {
+        position: relative;
+        background: white;
+        width: 100%;
+        height: 370px;
+        border: 1px solid #e9e9e9;
+        box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12);
+        -moz-box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12);
+        -webkit-box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12);
+    }
+
+    .fileuploader #uzpload-label {
+        background: #2196F3;
+        color: #fff;
+        box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12);
+        -moz-box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12);
+        -webkit-box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12);
+        padding: 16px;
+        position: absolute;
+        top: 15%;
+        left: 0;
+        right: 0;
+        margin-right: auto;
+        margin-left: auto;
+        min-width: 20%;
+        text-align: center;
+        padding-top: 40px;
+        transition: 0.8s all;
+        -webkit-transition: 0.8s all;
+        -moz-transition: 0.8s all;
+        cursor: pointer;
+    }
+
+    .fileuploader.active {
+        background: #2196F3;
+    }
+
+    .fileuploader.active #upload-label {
+        background: #fff;
+        color: #2196F3;
+    }
+
+    .fileuploader #upload-label span.title {
+        font-size: 1.1em;
+        font-weight: bold;
+        display: block;
+    }
+
+    .fileuploader #upload-label i {
+        text-align: center;
+        display: block;
+        background: white;
+        color: #2196F3;
+        box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12);
+        -moz-box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12);
+        -webkit-box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12);
+        border-radius: 100%;
+        width: 80px;
+        height: 80px;
+        height: 80px;
+        font-size: 60px;
+        padding-top: 10px;
+        position: absolute;
+        top: -50px;
+        left: 0;
+        right: 0;
+        margin-right: auto;
+        margin-left: auto;
+    }
+
+    /*.Eheader{
+    background: #2196F3;
+     }*/
+    .Show {
+        top: 50%;
+        text-align: center;
+        color: #808080;
+        overflow: auto;
+        height: 180px;
+    }
+
+    .E-navbar-badge {
+        font-size: .7rem;
+        font-weight: 390;
+        padding: 2px 4px;
+        right: -6px;
+    }
+
+    .btn .badge {
+        position: relative;
+        top: -9px;
+    }
+
+    .main-footer {
+        background: #fff;
+        border-top: 1px solid #dee2e6;
+        color: #869099;
+        padding: 1rem;
+    }
+
+    .pTop {
+        padding-top: 8px;
+    }
+
+    fieldset.group  { 
+        border-radius: 7px;
+        margin: 0; 
+        padding: 0; 
+        margin-bottom: 1.25em; 
+        padding: .125em; 
+    } 
+
+    fieldset.group legend { 
+        width:inherit; /* Or auto */
+        border-bottom:none;
+        margin: 0; 
+        padding: 0; 
+        font-weight: bold; 
+        margin-left: 20px; 
+        font-size: 100%; 
+        color: black; 
+    } 
+
+
+    ul.checkbox  { 
+        margin: 0; 
+        padding: 0; 
+        margin-left: 20px; 
+        list-style: none; 
+    } 
+
+    ul.checkbox li input { 
+        margin-right: .25em; 
+    } 
+
+    ul.checkbox li { 
+        border: 1px transparent solid; 
+        display:inline-block;
+        width:12em;
+    } 
+
+    ul.checkbox li label { 
+        margin-left: ; 
+    } 
+
+    .note-editor.note-frame{
+        opacity: 0.8;
+        border: 1px solid #cccccc;
+        box-shadow: 0 0 0px rgba(0,0,0,0), 0 1px 3px rgba(0,0,0,0);
+    }
+
+    textarea{
+        width: 100%; 
+        height: 200px; 
+        font-size: 14px; 
+        line-height: 18px; 
+        border: 1px solid #dddddd; 
+        padding: 10px;
+    }
+        
+    .btn-group-custom{
+        background-color: rgba(0, 0, 0, .1);
+        border-radius: 9999px;
+        display: inline-flex;
+        padding: 4px;
+    }
+
+    .btn-group-custom label{
+        z-index: 1;
+        border-radius: 9999px;
+        cursor: pointer;
+        padding: 4px 8px;
+        margin-bottom: 0px;
+    }
+    
+    .btn-group-custom input[type="radio"]{
+        display: none;
+    }
+
+    .btn-group-custom input[type="radio"]:checked+label{
+        border-radius: 9999px;
+        cursor: pointer;
+        padding: 4px 8px;
+        @* background-color: #007bff; *@
+        color: #fff;
+        margin-bottom: 0px;
+        transition:color 0.2s ease-in-out;
+    }
+
+    .btn-group-custom input[type="radio"]:disabled+label ,.btn-group-custom input[type="radio"]:disabled+div{
+        cursor: no-drop !important;
+        opacity: 0.5;
+    }
+
+    :disabled{
+        cursor: no-drop !important;
+    }
+    
+    .span-custom-1 {
+        position: absolute;
+        top: 4px;
+        left: 12px;
+        width: 114px;
+        height: 29px;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.3s;
+        -webkit-transition: all 0.3s;
+        -webkit-border-radius: 5px;
+        -moz-border-radius: 5px;
+        border-radius: 9999px;
+        background-color: #007bff;
+        transform: translate(0);
+    }
+
+    #type_external:checked ~ .span-custom-1 {
+        transform:translateX(135px);
+        left:-5px;
+    }
+
+    .span-custom-2 {
+        position: absolute;
+        top: 11px;
+        left: 12px;
+        width: 58px;
+        height: 29px;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.3s;
+        -webkit-transition: all 0.3s;
+        -webkit-border-radius: 5px;
+        -moz-border-radius: 5px;
+        border-radius: 9999px;
+        background-color: #007bff;
+        transform: translate(0);
+    }
+
+    #app_no_desc:checked ~ .span-custom-2 {
+        transform:translateX(69px);
+        left:-5px;
+    }
+
+
+
+    
+</style>
+<!-- Summernote -->
+<script src="~/tmp/plugins/summernote/summernote-bs4.min.js"></script>
+
+<link href="~/Plugin/SweetAlert/sweetalert.css" rel="stylesheet" />
+<script src="~/Plugin/SweetAlert/sweetalert-dev.js"></script>
+<script src="~/Plugin/SweetAlert/sweetalert.min.js"></script>
+
+<link href="~/Plugin/filepond/filepond.css" rel="stylesheet">
+<script src="~/Plugin/filepond/filepond.min.js"></script>
+<script src="~/Plugin/filepond/filepond.jquery.js"></script>
+<script src="~/Plugin/filepond/filepond-plugin-file-encode.js"></script>
+<script src="~/Plugin/filepond/filepond-plugin-image-preview.min.js"></script>
+<script src="~/Plugin/filepond/filepond-plugin-file-validate-size.js"></script>
+<script src="~/Scripts/Shared/FilePond.js"></script>
+
+
+<script src="~/Scripts/Request/Request.js"></script>
+
+    @* <div class="loading hidden" id="loading">Loading&#8230;</div> *@
+
+    <!-- Content Wrapper. Contains page content -->
+
+    <div id="MODE" value="@ViewBag.mode" class="content-wrapper">
+        <!-- Content Header (Page header) -->
+        <section class="content-header">
+            <div class="container-fluid">
+                <div class="row mb-2">
+                    <div class="col-sm-6">
+                        <h1>Change control details</h1>
+                    </div>
+                    <div class="col-sm-6">
+                        <ol class="breadcrumb float-sm-right">
+                            <li class="breadcrumb-item"><a href='@Url.Action("Index","Home")'>New Event System</a></li>
+                            <li class="breadcrumb-item active"> @(isEditMode ? "Edit " : "") Request</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+            <!-- /.container-fluid -->
+        </section>
+
+
+        <!-- Main content -->
+        <section class="content">
+            <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="card card-primary">
+                        <div class="card-header">
+                            <div class="row">
+                                <div class="col-sm-10">
+                                    <h3 class="card-title col-form-label" style="padding-bottom: 0px;"> @(isEditMode ? "Edit " : "") Request</h3>
+                                </div>
+                                <div class="col-sm-2">
+                                    @{
+                                        if(isEditMode){ 
+                                            iTopic_id = Topic.Code; 
+                                            eTopic_id = Topic.Code; 
+                                        }
+                                    }
+                                    <input type="text" name="model" style="max-width: 143px;" class="form-control center right" id="iTopic" value="ID: @iTopic_id" disabled>
+                                    <input type="text" name="model" style="max-width: 143px;" class="form-control center right hidden" id="eTopic" value="ID: @eTopic_id"  disabled>
+                                </div>
+                            </div>
+                        </div>
+                        <form class='form-horizontal @(isEditMode ? "Edit" : "Request")' action="" method="post">
+                        <div class="card-body">
+                                                    
+                                
+                            <div class="form-group row">
+                                <label class="col-sm-2 col-form-label">Change Type<span class="text-danger">*</span></label>
+                                <div class="col-sm-10">
+                                    <div class="btn-group-custom">
+                                        <input type="radio" id="type_internal" name="changeType" value="Internal" @(isInternal ? "checked" : "") @(isEditMode ? "disabled":"")>
+                                        <label for="type_internal">Internal Change</label>
+                                        <input type="radio" id="type_external" name="changeType" value="External" @(isInternal ? "" : "checked") @(isEditMode ? "disabled":"")>
+                                        <label for="type_external">External Change</label>
+                                        <span class="span-custom-1"></span>
+                                    </div>
+                                </div>
+                            </div>
+                            <hr>
+                            
+                            <div class="form-group row">
+                                <label class="col-sm-2 col-form-label">Change Items<span class="text-danger">*</span></label>
+                                <div class="col-sm-10 col-form-label row" style="padding-left: 13px;">
+                                @{
+                                    var i=0;
+                                    var j=0; 
+                                }
+                                    @foreach(var Item in ChangeItems){
+                                        if(i==0){ 
+                                            if(j==0){
+                                                @:<div class="col-sm-4"> 
+                                            }else if(j==1){
+                                                @:<div class="col-sm-3"> 
+                                            }else if(j==2){
+                                                @:<div class="col-sm-5"> 
+                                            }
+                                        }
+                                            <div class="row">
+                                                <label class="mr-3">
+                                                    @{
+                                                        var isChecked = false;
+                                                        if(isEditMode && Item.Name == Topic.Change_item){
+                                                            isChecked = true;    
+                                                        }
+                                                    }
+                                                    <input type="radio" name="changeItem" value="@Item.ID" class='flat-red @(Item.ID == 12?"other":"")' @(isChecked || Item.ID > 12 ? "checked" : "")>
+                                                    @Html.DisplayFor(model => Item.Name) 
+                                                    <span class="changeItem-desc"></span>
+                                                </label>
+                                            </div>
+                                        if(i==3){
+                                            @:</div>
+                                            i=0;
+                                            j++;
+                                        }else{
+                                            i++;
+                                        }
+                                    }
+                                </div>
+                            </div>
+                            <hr>
+
+
+                            <div class="form-group row">
+                                <label class="col-sm-2 col-form-label">Product Type<span class="text-danger">*</span></label>
+                                <div class="col-sm-10 col-form-label">
+                                @foreach(var Type in ProductTypes){
+                                    <label class="mr-3">
+                                        @{
+                                            var isChecked = false;
+                                            if(isEditMode && Type.Name == Topic.Product_type){
+                                                isChecked = true;    
+                                            }
+                                        }
+                                        <input type="radio" name="productType" value="@Type.ID" class="flat-red @(Type.ID == 8?"other":"")" @(isChecked || Type.ID > 8 ? "checked" : "") required>
+                                        @Html.DisplayFor(model => Type.Name)
+                                        <span class="productType-desc"></span>
+                                    </label>
+                                }
+                                </div>
+                                <div class="col-sm-2"></div>
+                                <div class="col-sm-5">
+                                    <div class="form-group">
+                                        <label>Model</label>
+                                        <input type="text" name="model" class="form-control" id="P_model" placeholder="Enter Model" value='@(isEditMode?Topic.Model.Trim():"")' required>
+                                    </div>
+                                </div>
+                                <div class="col-sm-5">
+                                    <div class="form-group">
+                                        <label>Part No</label>
+                                        <input type="text" name="partNo" class="form-control" id="P_partno" placeholder="Enter Part No" value='@(isEditMode?Topic.PartNo.Trim():"")' required>
+                                    </div>
+                                </div>
+                                <div class="col-sm-2"></div>
+                                <div class="col-sm-5">
+                                    <div class="form-group">
+                                        <label>Part Name</label>
+                                        <input type="text" name="partName" class="form-control" id="P_partname" placeholder="Enter Part Name" value='@(isEditMode?Topic.PartName.Trim():"")' required>
+                                    </div>
+                                </div>
+                                <div class="col-sm-5">
+                                    <div class="form-group has-error">
+                                        <label>Process Name</label>
+                                        <input type="text" name="processName" class="form-control" id="P_processname" placeholder="Enter Process Name" value='@(isEditMode?Topic.ProcessName.Trim():"")' required>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <hr>
+                            @{
+                                var isApp = true;
+                                if(isEditMode){
+                                    if(Topic.App == null || Topic.App == "" || Topic.App == "-"){
+                                        isApp = false;
+                                    }  
+                                }
+                            }
+                            @if(isApp && isEditMode){
+                            <div class="form-group row">
+                                <label class="col-sm-2 col-form-label">APP/IPP Inform to customer </label>
+                                <div class="col-sm-10">
+                                    <div class="form-group">
+                                        <textarea name="appDescription" placeholder="Place some text here" style="width: 100%; height: 200px; font-size: 14px; line-height: 18px; border: 1px solid #dddddd; padding: 10px;" disabled>@Html.DisplayFor(model => Topic.App)
+                                        </textarea>
+                                    </div>
+                                </div>
+                            </div>
+                            }
+
+                            @{
+                                var isSubject = false;
+                                var isDetail = false;
+                                var isTiming = false;
+                                
+                                if(isEditMode){
+                                    if(Topic.Subject != null && Topic.Subject != "" && Topic.Subject != "-"){
+                                        isSubject = true;
+                                    }  
+                                    if(Topic.Detail != null && Topic.Detail != "" && Topic.Detail != "-"){
+                                        isDetail = true;
+                                    }  
+                                    if(Topic.Timing != null && Topic.Timing != "" && Topic.Timing != "-"){
+                                        isTiming = true;
+                                    }  
+                                }
+                            }
+                            <div class="form-group row">
+                                <label class="col-sm-2 col-form-label">Change Date<span class="text-danger">*</span> </label>
+                                <div class="col-sm-4">
+                                    <div class="input-group">
+                                        <div class="input-group-prepend">
+                                        <span class="input-group-text"><i class="far fa-calendar-alt"></i></span>
+                                        </div>
+                                            <input data-toggle="datepicker" class="form-control required" placeholder="Select Date " autocomplete="off" name="timing" data-inputmask-alias="datetime" data-inputmask-inputformat="dd-MM-yyyy" data-mask="99-99-9999" style="border-radius: 0px 5px 5px 0px; !important" required>
+                                            <div data-toggle="datepicker"></div>
+                                            @* @if(Topic != null && Topic.Timing != null){
+                                                <script>
+                                                    $("[name='timing']").datepicker('setDate', '@Topic.Timing');
+                                                </script>
+                                            } *@
+                                    </div>
+                                </div>
+                                <div class="col-sm-6">
+                                <div class="form-group">
+                                    <div class="custom-control custom-switch mt-2">
+                                        <input type="checkbox" class="custom-control-input" id="change_date_switch">
+                                        @{
+                                                var t_desc = (Topic!= null ?  Topic.TimingDesc ?? null : null);
+                                            }
+                                        <label class="custom-control-label" for="change_date_switch">ไม่สามารถระบุได้</label>
+                                    </div>
+                                </div>
+                                </div>
+                            </div>
+
+
+                            <div class="form-group row" id="change_date_desc" style="display:none">
+                                <label class="col-sm-2 col-form-label">Change Date's Description<span class="text-danger">*</span> </label>
+                                <div class="col-sm-10">
+                                    <div class="form-group">
+                                        @* <textarea class="textareaSubject" name="subject" placeholder="Place some text here">
+                                        </textarea>
+                                            <script>
+                                                $('.textareaSubject').summernote({
+                                                    height: 140,
+                                                    toolbar: [
+                                                        ['font', ['bold', 'underline', 'clear']],
+                                                        ['fontsize', ['fontsize']],
+                                                        ['para', ['ul', 'ol']],
+                                                    ],
+                                                });
+                                            </script>
+                                            @if(isSubject){
+                                            <script>
+                                                $(".textareaSubject").summernote('code' , `@Html.Raw(Topic.Subject)`,{
+                                                    toolbar: [
+                                                        ['font', ['bold', 'underline', 'clear']],
+                                                        ['fontsize', ['fontsize']],
+                                                        ['para', ['ul', 'ol']],
+                                                    ],
+                                                });
+                                            </script>
+                                            } *@
+                                            
+
+                                        <input type="text" class="form-control" name="timingDesc" placeholder="กรุณาระบุรายละเอียด" value="@t_desc"></input>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-group row">
+                                <label class="col-sm-2 col-form-label">Subject/Purpose for change </label>
+                                <div class="col-sm-10">
+                                    <div class="form-group">
+                                        <textarea class="textareaSubject" name="subject" placeholder="Place some text here">
+                                        </textarea>
+                                            <script>
+                                                $('.textareaSubject').summernote({
+                                                    height: 140,
+                                                    toolbar: [
+                                                        ['font', ['bold', 'underline', 'clear']],
+                                                        ['fontsize', ['fontsize']],
+                                                        ['para', ['ul', 'ol']],
+                                                    ],
+                                                });
+                                            </script>
+                                            @if(isSubject){
+                                            <script>
+                                                $(".textareaSubject").summernote('code' , `@Html.Raw(Topic.Subject)`,{
+                                                    toolbar: [
+                                                        ['font', ['bold', 'underline', 'clear']],
+                                                        ['fontsize', ['fontsize']],
+                                                        ['para', ['ul', 'ol']],
+                                                    ],
+                                                });
+                                            </script>
+                                            }
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-group row">
+                                <label class="col-sm-2 col-form-label">Change Details & Introduction </label>
+                                <div class="col-sm-10">
+                                    <div class="form-group">
+                                        <textarea class="textareaDetails" name="detail" placeholder="Place some text here">
+                                        </textarea>
+                                            <script>
+                                                $('.textareaDetails').summernote({
+                                                    height: 140,
+                                                    toolbar: [
+                                                        ['font', ['bold', 'underline', 'clear']],
+                                                        ['fontsize', ['fontsize']],
+                                                        ['para', ['ul', 'ol']],
+                                                    ],
+                                                });
+                                            </script>
+                                            @if(isDetail){
+                                            <script>
+                                                $(".textareaDetails").summernote('code' , `@Html.Raw(Topic.Detail)`,{
+                                                    toolbar: [
+                                                        ['font', ['bold', 'underline', 'clear']],
+                                                        ['fontsize', ['fontsize']],
+                                                        ['para', ['ul', 'ol']],
+                                                    ],
+                                                });
+                                            </script>
+                                            }
+                                    </div>
+                                </div>
+                            </div>
+
+                            <hr>
+
+                            <div class="form-group row">
+                                <label for="inputSkills" class="col-sm-2 col-form-label">Attach File</label>
+                                <div class="col-sm-10">
+                                    <input type="file" class="my-pond" name="filepond"/>
+                                    @if(isEditMode && Topic.FileList.Count != 0){
+                                        <div class="card-footer bg-white">
+                                        @{ ViewBag.DisableFileList = true; }
+                                            @Html.Partial("~/Views/Helper/FileList.cshtml",Topic.FileList as List<FileItem>)
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                            
+                            <hr>
+
+                            <div class="form-group row">
+                                <label for="inputSkills" class="col-sm-2 col-form-label">Review & Result Confirm Requirement<span class="text-danger">*</span></label>
+                                <div class="col-sm-10">
+                                @foreach(var DepartmentGroup in DepartmentLists){
+                                    <fieldset class="group border p-2"> 
+                                        @{var departMentGroupName = DepartmentGroup.Name.Replace("_", " ");}
+                                        <legend class="w-auto"> <input type="checkbox" class="checkedAll" id="@DepartmentGroup.Name"/> <label for="@DepartmentGroup.Name" style="display: contents;">@departMentGroupName</label></legend> 
+                                        <ul class="checkbox"> 
+                                            @foreach(var Department in DepartmentGroup.Department){
+                                                try{
+                                                    var isChecked = false;
+                                                    if(isEditMode){
+                                                        if(Topic.RelatedListAlt.Exists(x => x.Department == Department.Name)){
+                                                                isChecked = true;
+                                                        }
+                                                    }
+                                                    <li><input type="checkbox" class="related_radio checkSingle @DepartmentGroup.Name" id="@Department.ID" value="1" name="@Department.Name" @(isChecked ? "checked" : "")/><label for="@Department.ID">@Department.Name</label></li> 
+                                                }catch(Exception err){
+                                                    <li><input type="checkbox" class="related_radio checkSingle @DepartmentGroup.Name" id="@Department.ID" value="1" name="@Department.Name" /><label for="@Department.ID">@Department.Name</label></li> 
+
+                                                }
+                                            
+                                            }
+                                        </ul> 
+                                    </fieldset> 
+                                }
+                                </div>
+                            </div>
+
+                            <br>
+                            <hr>
+                            <br>
+                            <div class="form-group row">
+                                <div class="col-sm-12">
+                                    <button type="submit" id="ReviewSubmit" class="btn btn-info float-right">Submit</button>
+                                </div>
+                
+                            </div>
+                    </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+                
+            </div>
+            <!-- /.container-fluid -->
+        </section>
+        <!-- /.content -->
+    </div>
+
