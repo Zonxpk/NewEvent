@@ -301,6 +301,15 @@
                                 </p>
                             </a>
                         </li>
+                        <li id="menu1" class="nav-item">
+                            <a id="menu1-1" href="@Url.Action("Index", "Calendar")" class="nav-link animsition-link">
+                                <i class="nav-icon fas fa-tachometer-alt"></i>
+                                <p>
+                                    Main menu
+                                    @* <span class="right badge badge-danger">New</span> *@
+                                </p>
+                            </a>
+                        </li>
                         @if (Session["Department"].ToString() != "Guest")
                         {
                             <li id="menu2" class="nav-item">
@@ -356,7 +365,7 @@
         <footer class="main-footer" style="position: unset;">
             <strong>Copyright &copy; 2019-2020 IT Department Design Team</strong> All rights reserved.
             <div class="float-right d-none d-sm-inline-block">
-                <b>Version</b> 1.1
+                <b>Version</b> Alpha 1.0
             </div>
         </footer>
     </div>
@@ -419,6 +428,10 @@
     <script src="~/Scripts/Shared/Shared.js"></script>
     
     <script src="~/Scripts/jquery.transit.min.js"></script> 
+
+    <link href="~/Plugin/fullcalendar/css/fullcalendar.min.css" rel="stylesheet" />
+    <script src='~/Plugin/fullcalendar/js/fullcalendar.min.js'></script>
+
     <!-- page script -->
     <script>
         $(function () {

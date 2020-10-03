@@ -30,41 +30,6 @@ $(() => {
     }
 
 /* -------------------------------------------------------------------------- */
-/*                                Reject Topic                                */
-/* -------------------------------------------------------------------------- */
-
-$("#reject").click(() => {
-        swal({
-            title: "Warning", 
-            text: "Do you want to reject this Topic?", 
-            // closeOnClickOutside: false,
-            content: "input",
-            buttons : [true,true],
-            icon:"warning",
-        }).then((res) => {
-            if(res != null){
-                if(res.trim().length != 0){
-                    $.post(RejectTopicPath, {topic_code:topic_code,desc:res}, (result) => { 
-                        if(result.status == "success" && result.mail != null && result.mail != ""){
-                            $.post(GenerateMailPath,{ 'mode': result.mail, 'dept': result.dept, 'topic_code':topic_code, }).fail((error) => {
-                                console.error(error);
-                                swal("Error", "Cannot send email to Requestor, Please try again", "error");
-                                return;
-                            })
-                        }
-                        swal("Success", "Reject Success", "success").then(location.reload());
-                    }).fail( function(xhr, textStatus, errorThrown) {
-                        console.error(xhr.responseText);
-                        swal("Something wrong", "Please contact admin", "error");
-                    });
-                }else{
-                    swal("Something wrong", "Please enter the text", "error");
-                }
-            }
-        });
-    });
-
-/* -------------------------------------------------------------------------- */
 /*                                  Go to top                                 */
 /* -------------------------------------------------------------------------- */
 
@@ -110,9 +75,9 @@ var rsm_validator = $('#resubmit_form').validate({
 /*                           Resubmit's Wizard modal                          */
 /* -------------------------------------------------------------------------- */
 
-    $("#resubmit_modal").modalWizard();
-    $("#resubmit_modal").on("navigate", (e, navDir, stepNumber) => {
-        if($("#resubmit_modal").attr("data-current-step") == 3){
+    $("#problem_modal").modalWizard();
+    $("#problem_modal").on("navigate", (e, navDir, stepNumber) => {
+        if($("#problem_modal").attr("data-current-step") == 3){
             let quick_form = $("form#resubmit_form").serializeArray();
             console.log(quick_form);
 
@@ -135,12 +100,12 @@ var rsm_validator = $('#resubmit_form').validate({
             $("#related_desc").html(desc);
             console.log("related: ",related);
         }else{
-            $(".btn-success").prop('disabled', true);
+            // $(".btn-success").prop('disabled', true);
             if(navDir == "prev"){
                 relatedValidate();
             }else{
                 if(!resubmit_formIsEmpty){
-                    $(".btn-success").prop('disabled', (rsm_validator.form()) ? false : true); 
+                    // $(".btn-success").prop('disabled', (rsm_validator.form()) ? false : true); 
                 }
             }
         }
@@ -150,24 +115,9 @@ var rsm_validator = $('#resubmit_form').validate({
 /*                           Related's Wizard modal                           */
 /* -------------------------------------------------------------------------- */
 
-$("#related_rv").modalWizard();
-$("#related_rv").on("navigate", (e, navDir, stepNumber) => {
-    if($("#related_rv").attr("data-current-step") == 2){
-        let new_related_string = "";
-        new_related_list = [];
-        $(".new_related:checked").each(function () {
-            new_related_list.push(this.name);
-        });
-        new_related_list.forEach(item => {
-                new_related_string = (new_related_string == "") ? item : new_related_string + " , " + item;
-        });
-
-        $("#new_related_dept").html(new_related_string);
-        console.log("related: ",new_related_string);
-    }else{
-        // $(".btn-success").prop('disabled', true);
-    }
-});
+// $("#accident_modal").modalWizard();
+// $("#accident_modal").on("navigate", (e, navDir, stepNumber) => {
+// });
 
 /* -------------------------------------------------------------------------- */
 /*                             Resubmit's Validate                            */
@@ -184,52 +134,6 @@ $("#related_rv").on("navigate", (e, navDir, stepNumber) => {
         }
     });
 
-/* -------------------------------------------------------------------------- */
-/*                              Trial's Validate                              */
-/* -------------------------------------------------------------------------- */
-
-    var tr_validator = $('#Trial').validate({
-        rules: { 
-          tr_desc: {required: true,},
-        },
-        messages: {
-          tr_desc: {required: "Please enter a description",},
-        },
-        errorElement: 'span',
-        errorPlacement: function (error, element) {
-          error.addClass('invalid-feedback');
-          element.closest(".col-form-label").append(error);
-          $(".btn-success").prop('disabled', true);
-        },
-        highlight: function (element, errorClass, validClass) {$(element).addClass('is-invalid');},
-        unhighlight: function (element, errorClass, validClass) {$(element).removeClass('is-invalid');}
-    });
-    
-    $("#Trial [name='tr_desc']").on("keydown keyup", () => {
-        $("#tr_submit").prop('disabled', (tr_validator.form()) ? false : true); 
-    });
-
-    var cf_validator = $('#Confirm').validate({
-        rules: { 
-          cf_desc: {required: true,},
-        },
-        messages: {
-          cf_desc: {required: "Please enter a description",},
-        },
-        errorElement: 'span',
-        errorPlacement: function (error, element) {
-          error.addClass('invalid-feedback');
-          element.closest(".col-form-label").append(error);
-          $(".btn-success").prop('disabled', true);
-        },
-        highlight: function (element, errorClass, validClass) {$(element).addClass('is-invalid');},
-        unhighlight: function (element, errorClass, validClass) {$(element).removeClass('is-invalid');}
-    });
-    
-    $("#Confirm [name='cf_desc']").on("keydown keyup", () => {
-        $("#cf_submit").prop('disabled', (cf_validator.form()) ? false : true); 
-    });
-    
 /* -------------------------------------------------------------------------- */
 /*                        Resubmit Department checkbox                        */
 /* -------------------------------------------------------------------------- */
@@ -303,7 +207,7 @@ $.each(DepartmentLists, (key,val) => {
 
     function relatedValidate(){
         checkbox_dept = $('input:checkbox.qForm.checkSingle:checked').length
-        $(".rsm-next").prop('disabled', (checkbox_dept > 0) ? false : true);
+        $(".rsm-submit").prop('disabled', (checkbox_dept > 0) ? false : true);
     }
 
     $('[data-toggle="datepicker"]').datepicker({
@@ -316,8 +220,8 @@ $.each(DepartmentLists, (key,val) => {
 
     $("#tp_approve").click(() => {
         swal({
-            title: "Approve Topic", 
-            text: "Do you want to approve this Topic?", 
+            title: "งานดังกล่าวพบปัญหาหรือไม่", 
+            text: "หากไม่พบปัญหา สามารถกด OK เพื่อสิ้นสุด Event ดังกล่าว", 
             // closeOnClickOutside: false,
             buttons : [true,true],
             icon:"warning",
@@ -475,63 +379,6 @@ $("form#Trial").submit((e) => {
         })
 });
 
-/* -------------------------------------------------------------------------- */
-/*                            Submit confirm topic                            */
-/* -------------------------------------------------------------------------- */
-
-$("form#Confirm").submit((e) => {
-    e.preventDefault();
-    $('#loading').removeClass('hidden')
-        let confirm_form = $("form#Confirm").serializeArray();
-        var promises = [];
-
-        files = file_list;
-        console.log("files",files);
-        
-        for(var index in files){
-            files[index].file = files[index].detail.file;
-            delete files[index].detail;
-        }
-
-        promises.push($.post(InsertConfirmPath,{ desc: confirm_form[0].value},(result) => {
-            if(result.mail != ""){
-                $.post(GenerateMailPath,{ 'mode': result.mail, 'topic_code':topic_code, 'dept':result.dept, 'pos':result.pos }).fail((error) => {
-                    console.error(error);
-                    swal("Error", "Cannot send email to Requestor, Please try again", "error");
-                    return;
-                })
-            }
-            console.log('Inserted trial');
-            files.forEach(element => {
-                var Data = new FormData();
-                Data.append("file",element.file);
-                Data.append("description",element.description);
-                promises.push($.ajax({
-                    type: "POST",
-                    url: InsertFileConfirmPath,
-                    data: Data,
-                    cache: false,
-                    processData: false,
-                    contentType: false,
-                    success: function () {
-                        console.log('confirm file uploaded');
-                    },error: function() {
-                        swal("Error", "Upload file not success", "error");
-                    }
-                }));
-            });
-        }).fail(() => {
-            swal("Error", "Confirm is not succes, Please contact admin", "error");
-            $('#loading').addClass('hidden')
-        }));
-
-        Promise.all(promises).then(() => {
-            $('#loading').addClass('hidden')
-            InsertReviewStatus = false;
-            $("#cf_submit").prop("disabled",true)
-            swal("Success", "Insert Complete", "success").then(setTimeout(() => { location.reload(); }, 1500));
-        })
-});
 
 /* -------------------------------------------------------------------------- */
 /*                               Apply resubmit                               */
@@ -563,76 +410,6 @@ $("form#Confirm").submit((e) => {
         });
     });
 
-/* -------------------------------------------------------------------------- */
-/*                               Apply related                                */
-/* -------------------------------------------------------------------------- */
-
-$("form#related_form").submit((e) => {
-    e.preventDefault();
-
-    let QC1 = $("input#rl-29").prop("checked");
-    let QC2 = $("input#rl-30").prop("checked");
-    let QC3 = $("input#rl-31").prop("checked");
-        
-    let PE1_Process = $("input#rl-32").prop("checked");
-    let PE2_Process = $("input#rl-33").prop("checked");
-    let P5_ProcessDesign = $("input#rl-44").prop("checked");
-    let P6_ProcessDesign = $("input#rl-45").prop("checked");
-
-
-    if(isInternal){
-        if(!(PE1_Process || PE2_Process || P5_ProcessDesign || P6_ProcessDesign) || !(QC1 || QC2 || QC3)){ //Need to select PE_Process or QC as Auditor at lease one
-            swal("Warning", "Please select PE_Process and QC at least one", "warning");
-            return;
-        }else if(Number(QC1) + Number(QC2) + Number(QC3) != 1 && Number(PE1_Process) + Number(PE2_Process) + Number(P5_ProcessDesign) + Number(P6_ProcessDesign) != 1  == false){ //When select QC and PE_Process more than one
-            swal("Warning", "Please select one QC and one PE_Process", "warning");
-            return
-        }else if(Number(QC1) + Number(QC2) + Number(QC3) != 1 ){ //When select QC more than one
-            swal("Warning", "Please select one QC", "warning");
-            return
-        }else if(Number(PE1_Process) + Number(PE2_Process) + Number(P5_ProcessDesign) + Number(P6_ProcessDesign) != 1   ){ //When select PE_Process more than one
-            swal("Warning", "Please select one PE_Process", "warning");
-            return
-        }
-    }else if(isExternal){
-        if(!(QC1 || QC2 || QC3)){ //Need to select QC as Auditor at lease one
-            swal("Warning", "Please select QC at least one", "warning");
-            return;
-        }else if(Number(QC1) + Number(QC2) + Number(QC3) != 1 ){ //When select QC more than one
-            swal("Warning", "Please select one QC", "warning");
-            return
-        }
-    }
-
-    let new_dept_related = $(".new_related").serializeArray();
-    for(x in new_dept_related){
-        new_dept_related[x] = new_dept_related[x].name;
-    }
-
-    $(".new_related").attr("disabled",false);
-    
-    let new_all_related = $(".new_related").serializeArray();
-    for(x in new_all_related){
-        new_all_related[x] = new_all_related[x].name;
-    }
-    
-    console.log(new_all_related);
-    $.post(InsertRelatedPath, {dept_list : new_all_related}, () =>{
-        console.log('Related created');
-        $.post(UpdateTopicRelatedPath,(res) => {
-            if(res.status == "success"){
-                if(topic_status == "8"){
-                    $.post(GenerateMailPath,{ 'mode': 'InformUser', 'topic_code':topic_code, 'dept_arry': new_dept_related, }).fail((error) => {
-                        console.error(error);
-                        swal("Error", "Cannot send email to Related user, Please try again", "error");
-                        return;
-                    });
-                }
-                swal("Success", "Update related complete", "success").then(setTimeout(() => { location.reload(); }, 1500));
-            }
-        });
-    });
-});
 
 /* -------------------------------------------------------------------------- */
 /*                              Response resubmit                             */
@@ -688,41 +465,6 @@ $("form#related_form").submit((e) => {
     });
 
 
-/* -------------------------------------------------------------------------- */
-/*                             Change topic status                            */
-/* -------------------------------------------------------------------------- */
-
-    $(".zoom-fab#change_status").click(() => {
-        var change_status = "Change status from";
-        var new_status = 0;
-        if(topic_status == "8"){
-            change_status += " Review to Trial";
-            new_status = 9;
-        }else if(topic_status == "9"){
-            change_status += " Trial to Confirm";
-            new_status = 10;
-        }else if(topic_status == "10"){
-            change_status += " Confirm to Close";
-            new_status = 11;
-        }
-        swal({
-            title: "Change Status", 
-            buttons: [true,"Confirm"],
-            text: change_status, 
-            icon:"warning",
-        }).then((isChanged) => {
-            if(isChanged){
-                $.post(UpdateTopicStatusPath, {topic_code:topic_code,status:new_status}, (data) => {
-                    if(data){
-                        swal("Success", "Change Status Success", "success").then(location.reload());
-                    }else{
-                        swal("Error", "User Password Not Correct", "error");
-                    }
-                },"json");
-            }
-        });
-    });
-
 /* ---- Clear file in filepond when changing from Resubmit topic to topic --- */
     var reply_id = 0;
     $(".reply_modal").click((e) => {
@@ -743,13 +485,6 @@ $("form#related_form").submit((e) => {
         }
     });
 
-/* ----------------- Disable textbox when radio is not check ---------------- */
-$('form#review').on('keyup change paste', 'input, select, textarea', (e) => {
-    checkRadioAndInput(new_rv,rv_submit);
-    /* --------------- and check is valid or not after submit once -------------- */
-        if(rv_submit) checkInputRequired();
-    });
-    checkRadioAndInput(new_rv,rv_submit);
 });
 
 function SetResubmitID(rsm_id){
@@ -777,28 +512,6 @@ function checkRadioAndInput(radio_input_list,submit_once){
         }
     });
 
-/* ----------------------------- PE_Process case ---------------------------- */
-    if($("[name='rd-3']").length > 0){
-        $("[name='desc-29'] , [name='desc-30']").attr("disabled",($("[name='rd-3']:checked").val() == 1) ? false : true);
-        if($("[name='rd-3']:checked").val() == 1){
-            if($("[name='desc-29']").val().length < 1){
-                isNotfilled = true;
-                if(submit_once) $(`[name="desc-29"]`).addClass("is-invalid");
-            }else{
-                $(`[name="desc-29"]`).removeClass("is-invalid");
-            }
-            if($("[name='desc-30']").val().length < 1){
-                isNotfilled = true;
-                if(submit_once) $(`[name="desc-30"]`).addClass("is-invalid");
-            }else{
-                $(`[name="desc-30"]`).removeClass("is-invalid");
-            }
-        }else{
-            $("[name='desc-30']").val("");
-            $("[name='desc-29']").val("");
-            $(`[name="desc-29"] , [name="desc-30"]`).removeClass("is-invalid");
-        }
-    }
     (!isNotfilled) ? $("#validate-warning").hide() : $("#validate-warning").show();
     return isNotfilled;
 }

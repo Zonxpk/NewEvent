@@ -323,16 +323,16 @@
         background-image: url("@Url.Content("~/tmp/docs/assets/plugins/fontawesome-free/svgs/solid/tasks.svg")");
     }
 
-    .w-actions__fab--resubmit::before {
-        background-image: url("@Url.Content("~/tmp/docs/assets/plugins/fontawesome-free/svgs/solid/tasks.svg")");
+    .w-actions__fab--problem::before {
+        background-image: url("@Url.Content("~/tmp/docs/assets/plugins/fontawesome-free/svgs/solid/exclamation-triangle.svg")");
     }
 
-    .w-actions__fab--approve::before {
+    .w-actions__fab--finish::before {
         background-image: url("@Url.Content("~/tmp/docs/assets/plugins/fontawesome-free/svgs/solid/check.svg")");
     }
     
-    .w-actions__fab--edit::before {
-        background-image: url("@Url.Content("~/tmp/docs/assets/plugins/fontawesome-free/svgs/solid/pencil-alt.svg")");
+    .w-actions__fab--stop::before {
+        background-image: url("@Url.Content("~/tmp/docs/assets/plugins/fontawesome-free/svgs/solid/times.svg")");
     }
 
     .w-actions__fab--subscribe:hover::after {
@@ -383,7 +383,7 @@
 
 
 
-<script src="~/Scripts/Detail/Detail.js?date='@DateTime.Now.ToString("yyMMddHH")'"></script>
+<script src="~/Scripts/Detail/Detail.js?domain='nv',date='@DateTime.Now.ToString("yyMMddHH")'"></script>
 <script src="~/Scripts/Detail/ReviewList.js?date='@DateTime.Now.ToString("yyMMddHH")'"></script>
 <script src="~/Scripts/Detail/TrialList.js?date='@DateTime.Now.ToString("yyMMddHH")'"></script>
 <script src="~/Scripts/Detail/ConfirmList.js?date='@DateTime.Now.ToString("yyMMddHH")'"></script>
@@ -421,9 +421,7 @@
         <div class="container-fluid">
             <div class="col-sm-12">
                 <div class="row">
-                        @if(Resubmitable){ 
                             @Html.Partial("Fab",DepartmentList)
-                        }
 
                         @* @if(((isPEProcess && isInternal) || (isQC && isExternal)) && isApprover){  *@
                             @Html.Partial("Related",DepartmentList)
@@ -436,16 +434,15 @@
                                <span>Edit</span>
                             </a>
                         } *@
-                        @if(TopicApproveable){
-                            <a class="w-actions__fab w-actions__fab--approve bg-primary" id="tp_approve">
-                               <span>Approve</span>
+                            <a class="w-actions__fab w-actions__fab--finish bg-success" id="tp_approve">
+                               <span>Run Event Finish</span>
                             </a>
-                        }
-                        @if(Resubmitable){ 
-                            <a class="w-actions__fab w-actions__fab--resubmit bg-warning" id="resubmit" data-toggle="modal" data-target="#resubmit_modal">
-                                <span>Resubmit</span>
+                            <a class="w-actions__fab w-actions__fab--problem bg-warning" id="problem" data-toggle="modal" data-target="#problem_modal">
+                                <span>Open Problem</span>
                             </a>
-                        }
+                            <a class="w-actions__fab w-actions__fab--stop bg-danger" id="accident" data-toggle="modal" data-target="#accident_modal">
+                                <span>Stop Accidentally</span>
+                            </a>
                     </div>
                 </div>
             </div>
@@ -564,12 +561,6 @@
                 <!-- /.col -->
                 <div class="col-md-9">
                     <div class="card">
-                        <div class="card-header p-2">
-                            <ul class="nav nav-pills">
-                                <li class="nav-item"><a class="nav-link tab-nav mr-2 active" href="#Detail" data-toggle="tab">Detail</a></li>
-                                <li class='nav-item @(ResubmitList.Count == 0 ? "hidden" : "")' ><a class="nav-link tab-nav" href="#timeline" data-toggle="tab">Request Re-submit</a></li>
-                            </ul>
-                        </div>
                         <!-- /.card-header -->
                         <div class="card-body">
                             <div class="tab-content">
@@ -630,70 +621,68 @@
                                     </div>
                                     <!------------------------------------QUALITY CONTROL---------------------------------------------------------->
                                 @if(isExternal || ReviewList.Count != 0){
-                                    <hr>
-                                    @* <h1>Quality Control</h1> *@
-                                    <!-- The timeline -->
-                                    <div class="timeline timeline-inverse">
+                                    @* <hr> *@
+                                    <div class="mt-3 ml-n3 mr-n3">
+                                        <div class="card-header p-2">
+                                        <ul class="nav nav-pills">
+                                            <li class="nav-item"><a class="nav-link tab-nav mr-2 active" id="custom-tabs-four-home-tab" data-toggle="pill" href="#custom-tabs-four-home" role="tab">Detail</a></li>
+                                            <li class="nav-item"><a class="nav-link tab-nav mr-2" id="custom-tabs-four-profile-tab" data-toggle="pill" href="#custom-tabs-four-profile" role="tab">Detail</a></li>
+                                        </ul>
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="tab-content" id="custom-tabs-four-tabContent">
+                                                <div class="tab-pane fade active show" id="custom-tabs-four-home" role="tabpanel" aria-labelledby="custom-tabs-four-home-tab">
+                                                        @* <h1>Quality Control</h1> *@
+                                                            <!-- The timeline -->
+                                                            <div class="timeline timeline-inverse">
 
-                @* /* ------------------------------- Review List ------------------------------ */ *@
-                                        <div class="time-label">
-                                            <span class="bg-primary">
-                                                Review <br> 
-                                                @* <span class="time"><i class="far fa-clock"></i> 12:05</span> *@
-                                            </span>
-                                        </div>
-                                            @Html.Partial("Review/List",ReviewList) 
+                                        @* /* ------------------------------- Review List ------------------------------ */ *@
+                                                                <div class="time-label">
+                                                                    <span class="bg-primary">
+                                                                        PROBLEM DETAIL <br> 
+                                                                        @* <span class="time"><i class="far fa-clock"></i> 12:05</span> *@
+                                                                    </span>
+                                                                </div>
+                                                                    @Html.Partial("Review/List",ReviewList) 
 
-                @* /* ------------------------------- Trial List ------------------------------ */ *@
-                                        @if(Topic.Status == 9 || Topic.Status == 10 || Topic.Status == 11 || Topic.Status == 12){
-                                        <div class="time-label">
-                                            @if((Topic.RelatedListAlt.Count(e => e.Trial == 1) > 0 && Topic.Status != 9 ) || Topic.Status == 9 ){ //Request trial not exist
-                                                <span class="bg-primary">
-                                                    Trial & Confirm
-                                                </span>
-                                            }
-                                        </div>
-                                            @Html.Partial("Trial/List",TrialList) 
-                                        }
 
-                @* /* ------------------------------- Confirm List ------------------------------ */ *@
-                                        @if(Topic.Status == 10 || Topic.Status == 11 || Topic.Status == 12){
-                                        <div class="time-label">
-                                            <span class="bg-primary">
-                                                Initial Production
-                                            </span>
+                                                                @if(Topic.Status == 11 || Topic.Status == 12){
+                                                                <div class="time-label">
+                                                                    <span class="bg-primary">
+                                                                        Closed 
+                                                                        @* <br><span class="time"><i class="far fa-clock"></i> 2 days ago</span> *@
+                                                                    </span>
+                                                                </div>
+                                                                }
+                                                                <div>
+                                                                    <i class="far fa-clock bg-gray"></i>
+                                                                </div>
+                                                            </div>
+                                                </div>
+                                                <div class="tab-pane fade" id="custom-tabs-four-profile" role="tabpanel" aria-labelledby="custom-tabs-four-profile-tab">
+                                                    Mauris tincidunt mi at erat gravida, eget tristique urna bibendum. Mauris pharetra purus ut ligula tempor, et vulputate metus facilisis. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Maecenas sollicitudin, nisi a luctus interdum, nisl ligula placerat mi, quis posuere purus ligula eu lectus. Donec nunc tellus, elementum sit amet ultricies at, posuere nec nunc. Nunc euismod pellentesque diam. 
+                                                </div>
+                                            </div>
                                         </div>
-                                            @Html.Partial("Confirm/List",ConfirmList) 
-                                        }
-
-                                        @if(Topic.Status == 11 || Topic.Status == 12){
-                                        <div class="time-label">
-                                            <span class="bg-primary">
-                                                Closed 
-                                                @* <br><span class="time"><i class="far fa-clock"></i> 2 days ago</span> *@
-                                            </span>
-                                        </div>
-                                        }
-                                        <div>
-                                            <i class="far fa-clock bg-gray"></i>
-                                        </div>
+                                        <!-- /.card -->
                                     </div>
+                                    
                                 }
 
                                 @* /* ----------------------------- Review section ----------------------------- */ *@
                                 @if(isRelated && !isReview && (Topic.Status == 7 || Topic.Status == 8)){
-                                    if(isPEProcess && (Topic.Status == 7 || Topic.Status == 8)){
+                                    @* if(isPEProcess && (Topic.Status == 7 || Topic.Status == 8)){
                                         Session["isIssued"] = true;
                                         @Html.Partial("Review/PE_Process") 
                                     }else if(isQC && QcReviewable && (Topic.Status == 8)){
                                         @Html.Partial("Review/QC")
                                     }else if(((!isQC && !isPEProcess && Topic.Status == 8 && isInternal) || (isExternal && !isQC))){
                                         @Html.Partial("Review/Other", ReviewItems) 
-                                    }
+                                    } *@
 
                                 }else if((isTrialable || (QcTrialable && isQC)) && !isTrial && Topic.Status == 9){
                                 @* /* ----------------------------- Trial section ----------------------------- */ *@
-                                    <hr><br>
+                                    @* <hr><br>
                                     <h1>Trial & Confirm</h1><br>
                                     <form class="form-horizontal"  action="javascript:void(0);" id="Trial">
                                     <div class="form-group row">
@@ -714,31 +703,7 @@
                                                 <button type="submit" id="tr_submit" class="btn btn-info float-right" disabled>Submit</button>
                                             </div>
                                         </div>
-                                    </form>                                    
-                                }else if(((ViewBag.cf_list.Contains(department) && !isQC) || (isQC && QcConfirmable)) && !isConfirm && Topic.Status == 10){
-                                @* /* ----------------------------- Confirm section ----------------------------- */ *@
-                                    <hr><br>
-                                    <h1>Initial Production</h1><br>
-                                    <form class="form-horizontal"  action="javascript:void(0);" id="Confirm">
-                                    <div class="form-group row">
-                                        <label class="col-sm-2 col-form-label"> Description: </label>
-                                        <div class="col-sm-10 col-form-label">
-                                            <textarea class="form-control" name="cf_desc" style="height:20vh"></textarea>
-                                        </div>
-                                    </div>
-                                    <div class="form-group row">
-                                        <label class="col-sm-2 col-form-label"> Attach File: </label>
-                                        <div class="col-sm-10">
-                                            <input type="file" class="my-pond" name="filepond"/>
-                                        </div>
-                                    </div>
-                                    <hr><br>
-                                        <div class="form-group row">
-                                            <div class="col-sm-12">
-                                                <button type="submit" id="cf_submit" class="btn btn-info float-right" disabled>Submit</button>
-                                            </div>
-                                        </div>
-                                    </form>                                    
+                                    </form>                                     *@
                                 }
                                     @{
                                         var temp_dept = Session["Department"].ToString();

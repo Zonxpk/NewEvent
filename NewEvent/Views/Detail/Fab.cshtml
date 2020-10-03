@@ -63,11 +63,11 @@
 </style>
 
     <!-- Modal -->
-    <div class="modal fade" id="resubmit_modal" tabindex="-1" role="dialog" aria-labelledby="resubmit_modal" aria-modal="true" data-current-step="1">
+    <div class="modal fade" id="problem_modal" tabindex="-1" role="dialog" aria-labelledby="problem_modal" aria-modal="true" data-current-step="1">
         <div class="modal-dialog modal-lg" role="document">
             <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="resubmit_modal">Request Re-Submit</h5>
+                <h5 class="modal-title" id="resubmit_modal">Open Problem</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                 <span aria-hidden="true" style="font-size:27px">&times;</span>
                 </button>
@@ -77,6 +77,78 @@
                 <div class="col-sm-12">
                     <form action method="post" id="resubmit_form">
                     <fieldset data-step="1">
+                        <div class="row mb-2">
+                            <label class="col-sm-2 col-form-label" for="inputChangeDetails" >Problem date : </label>
+                            <div class="col-sm-4">
+                                <div class="col-form-label p-0 input-group row">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text"><i class="far fa-calendar-alt"></i></span>
+                                    </div>
+                                    <input type="text" name="due_date" data-toggle="datepicker" autocomplete="off" class="form-control mb-0 pb-0 rounded" data-inputmask-alias="datetime" data-inputmask-inputformat="dd/mm/yyyy">
+                                    <div data-toggle="datepicker"></div>
+                                </div>
+                            </div>
+                            <div class="col col-form-label">
+                                <label>Process :</label>
+                            </div>
+                            <div class="col-sm-4">
+                                <input type="text" name="partName" class="form-control" id="P_partname" placeholder="Enter Part Name" required>
+                            </div>
+                        </div>
+                        <div class="row mb-2">
+                            <div class="col-sm-2 col-form-label">
+                                <label>Category :</label>
+                            </div>
+                            <div class="col-sm-4 col-form-label pl-0">
+                                <select class="form-control select2" name="dept" style="width: 100%;">
+                                    <option value="">--- Blank ---</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row mb-2">
+                            <div class="col-sm-2 col-form-label">
+                                <label>Problem :</label>
+                            </div>
+                            <div class="col-sm-10 col-form-label pl-0">
+                                <textarea name="desc" type="text" minlength="15" class="form-control" placeholder="ระบุอย่างต่ำ 15 ตัวอักษร" style="height: 12vh;"></textarea>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <label class="col-sm-2 col-form-label " >
+                                Attach File:
+                            </label>
+                            <div class="col-sm-10 pl-0">
+                                <input type="file" class="my-pond" name="filepond_alt"/>
+                            </div>
+                        </div>
+                    </fieldset>
+                    <fieldset data-step="2">
+                        <div class="row mb-2">
+                            <div class="col-sm-2 col-form-label">
+                                <label>Cause :</label>
+                            </div>
+                            <div class="col-sm-10 col-form-label pl-0">
+                                <textarea name="desc" type="text" minlength="15" class="form-control" placeholder="ระบุอย่างต่ำ 15 ตัวอักษร" style="height: 12vh;"></textarea>
+                            </div>
+                        </div>
+                        <div class="row mb-2">
+                            <div class="col-sm-2 col-form-label">
+                                <label>Action :</label>
+                            </div>
+                            <div class="col-sm-10 col-form-label pl-0">
+                                <textarea name="desc" type="text" minlength="15" class="form-control" placeholder="ระบุอย่างต่ำ 15 ตัวอักษร" style="height: 12vh;"></textarea>
+                            </div>
+                        </div>
+                        <div class="row mb-2">
+                            <div class="col-sm-2 col-form-label">
+                                <label>Next Action :</label>
+                            </div>
+                            <div class="col-sm-10 col-form-label pl-0">
+                                <textarea name="desc" type="text" minlength="15" class="form-control" placeholder="ระบุอย่างต่ำ 15 ตัวอักษร" style="height: 12vh;"></textarea>
+                            </div>
+                        </div>
+                    </fieldset>
+                    <fieldset data-step="3">
                         @foreach(var DepartmentGroup in Model){
                             <fieldset class="group border p-2"> 
                                 @{var departMentGroupName = DepartmentGroup.Name.Replace("_", " ");}
@@ -89,58 +161,6 @@
                             </fieldset> 
                         }
                     </fieldset>
-                    <fieldset data-step="2">
-                        <div class="form-group row">
-                            <div class="col-sm-5 row">
-                                <label class="col-sm-4 col-form-label" for="inputChangeDetails" >Due date : </label>
-                                    <div class="col-sm-8 col-form-label p-0 input-group">
-                                        <div class="input-group-prepend">
-                                        <span class="input-group-text"><i class="far fa-calendar-alt"></i></span>
-                                        </div>
-                                        <input type="text" name="due_date" data-toggle="datepicker" autocomplete="off" class="form-control mb-0 pb-0 rounded" data-inputmask-alias="datetime" data-inputmask-inputformat="dd/mm/yyyy">
-                                        @* <input type="text" name="due_date" data-toggle="datepicker" autocomplete="off" class="form-control mb-0 pb-0 rounded" data-inputmask-alias="datetime" data-inputmask-inputformat="dd/mm/yyyy" data-mask="" im-insert="false"> *@
-                                        <div data-toggle="datepicker"></div>
-                                    </div>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-sm-12 col-form-label">
-                                <label>Description :</label>
-                                <textarea name="desc" type="text" minlength="15" class="form-control" placeholder="ระบุอย่างต่ำ 15 ตัวอักษร" style="height: 33vh;"></textarea>
-                            </div>
-                        </div>
-                    </fieldset>
-                    <fieldset data-step="3">
-                        <form class="form-horizontal">
-                            <div class="form-group row">
-                                <div class="col-sm-2 control-label txt-right">
-                                    <label>Due Date: </label>
-                                </div>
-                                <div class="col-sm-3">
-                                    <input class="form-control" id="related_date" rows="1" disabled contentEditable></input>
-                                    @* <div id="related_date"></div> *@
-                                </div>
-                            </div>
-                            <div class="form-group row">
-                                <div class="col-sm-2 control-label txt-right">
-                                    <label>Department: </label>
-                                </div>
-                                <div class="col-sm-10">
-                                    <textarea class="form-control" id="related_dept" rows="4" disabled contentEditable></textarea>
-                                    @* <div id="related_dept"></div> *@
-                                </div>
-                            </div>
-                            <div class="form-group row mb-0">
-                                <div class="col-sm-2 control-label txt-right">
-                                    <label>Description: </label>
-                                </div>
-                                <div class="col-sm-10">
-                                    <textarea class="form-control" id="related_desc" rows="5" disabled contentEditable></textarea>
-                                    @* <div id="related_dept"></div> *@
-                                </div>
-                            </div>
-                        </form>
-                    </fieldset>
                     </form>
                 </div>
             </div>
@@ -151,10 +171,60 @@
                 <button type="button" class="btn btn-secondary" data-step-to="prev">
                     Previous
                 </button>
-                <button type="button" class="btn btn-success rsm-next" data-step-to="next" disabled>
+                <button type="button" class="btn btn-success" data-step-to="next">
                     Next
                 </button>
-                <button type="submit" form="resubmit_form" class="btn btn-info rsm_submit">
+                <button type="submit" form="resubmit_form rsm-submit" class="btn btn-info rsm_submit">
+                    Submit
+                </button>
+            </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Modal -->
+    <div class="modal fade" id="accident_modal" tabindex="-1" role="dialog" aria-labelledby="accident_modal" aria-modal="true" data-current-step="1">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="resubmit_modal">Stop Accidentally</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true" style="font-size:27px">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+              <div class="row">
+                <div class="col-sm-12">
+                    <form action method="post" id="resubmit_form">
+                    <fieldset data-step="1">
+                        <div class="row mb-2">
+                            <label class="col-sm-2 col-form-label" for="inputChangeDetails" >Change date : </label>
+                            <div class="col-sm-4">
+                                <div class="col-form-label p-0 input-group row">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text"><i class="far fa-calendar-alt"></i></span>
+                                    </div>
+                                    <input type="text" name="due_date" data-toggle="datepicker" autocomplete="off" class="form-control mb-0 pb-0 rounded" data-inputmask-alias="datetime" data-inputmask-inputformat="dd/mm/yyyy">
+                                    <div data-toggle="datepicker"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row mb-2">
+                            <div class="col-sm-2 col-form-label">
+                                <label>Problem :</label>
+                            </div>
+                            <div class="col-sm-10 col-form-label pl-0">
+                                <textarea name="desc" type="text" minlength="15" class="form-control" placeholder="ระบุอย่างต่ำ 15 ตัวอักษร" style="height: 12vh;"></textarea>
+                            </div>
+                        </div>
+                    </fieldset>
+                    </form>
+                </div>
+            </div>
+            </div>
+            <div class="modal-footer">
+                <button type="submit" form="resubmit_form rsm-submit" class="btn btn-info rsm_submit">
                     Submit
                 </button>
             </div>

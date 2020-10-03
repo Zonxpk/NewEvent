@@ -123,7 +123,7 @@ namespace NewEvent.Models
         
         public TopicAlt GetTopicByCode(string topic_code){
             try{
-                var sql = $@"SELECT  Code, Type, Change_Item.Name as Change_item, Product_Type.Name AS Product_Type, Department, Revision, Model, PartNo, PartName, ProcessName, Status, [APP/IPP] as App, Subject, Detail, Timing, TimingDesc, Related, User_insert, Time_insert , ApprovedBy, ApprovedDate, 
+                var sql = $@"SELECT  Code, Type, Change_Item.Name as Change_item, Product_Type.Name AS Product_Type, Department, Revision, Model, PartNo, PartName, ProcessName, Topic.Status, [APP/IPP] as App, Subject, Detail, Timing, TimingDesc, Related, User_insert, Time_insert , ApprovedBy, ApprovedDate, 
                 ID FROM Topic 
                 LEFT JOIN Change_Item ON Topic.Change_item = ID_Change_item 
                 LEFT JOIN Product_Type ON Topic.Product_Type = ID_Product_Type 
@@ -133,7 +133,7 @@ namespace NewEvent.Models
                 var Topic = DB_CCS.Database.SqlQuery<TopicAlt>(sql).First();
                 return Topic;
             }catch(Exception ex){
-                var sql = $@"SELECT  Code, Type, Change_Item.Name as Change_item, Product_Type.Name AS Product_Type, Department, Revision, Model, PartNo, PartName, ProcessName, Status, [APP/IPP] as App, Subject, Detail, Timing, TimingDesc, Related, User_insert, Time_insert , ApprovedBy, ApprovedDate, 
+                var sql = $@"SELECT  Code, Type, Change_Item.Name as Change_item, Product_Type.Name AS Product_Type, Department, Revision, Model, PartNo, PartName, ProcessName, Topic.Status, [APP/IPP] as App, Subject, Detail, Timing, TimingDesc, Related, User_insert, Time_insert , ApprovedBy, ApprovedDate, 
                 ID FROM Topic 
                 LEFT JOIN Change_Item ON Topic.Change_item = ID_Change_item 
                 LEFT JOIN Product_Type ON Topic.Product_Type = ID_Product_Type 

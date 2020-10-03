@@ -325,6 +325,7 @@
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="Controllers\DetailController.cs" />
+    <Compile Include="Controllers\CalendarController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\LoginController.cs" />
     <Compile Include="Controllers\MailController.cs" />
@@ -455,6 +456,8 @@
     <Content Include="Plugin\filepond\filepond.css" />
     <Content Include="Plugin\filepond\filepond.jquery.js" />
     <Content Include="Plugin\filepond\filepond.min.js" />
+    <Content Include="Plugin\fullcalendar\css\fullcalendar.min.css" />
+    <Content Include="Plugin\fullcalendar\js\fullcalendar.min.js" />
     <Content Include="Plugin\img\loading-1.svg" />
     <Content Include="Plugin\img\loading-2.svg" />
     <Content Include="Plugin\img\loading-3.svg" />
@@ -523,6 +526,7 @@
     <Content Include="Scripts\Detail\Detail.js" />
     <Content Include="Scripts\Detail\ReviewList.js" />
     <Content Include="Scripts\Detail\TrialList.js" />
+    <Content Include="Scripts\Calendar\Calendar.js" />
     <Content Include="Scripts\Home\Home.js" />
     <!-- <Content Include="Scripts\jquery-3.4.1.js" />
     <Content Include="Scripts\jquery-3.4.1.min.js" />
@@ -3889,6 +3893,8 @@
     <Content Include="tmp\upload\css\jquery.fileupload-ui.css" />
     <Content Include="tmp\upload\css\jquery.fileupload.css" />
     <Content Include="tmp\upload\img\loading.gif" />
+    <Content Include="tmp\upload\img\Picture1.png" />
+    <Content Include="tmp\upload\img\Picture2.png" />
     <Content Include="tmp\upload\img\progressbar.gif" />
     <Content Include="tmp\upload\js\cors\jquery.postmessage-transport.js" />
     <Content Include="tmp\upload\js\cors\jquery.xdr-transport.js" />
@@ -3944,6 +3950,7 @@
     <Content Include="Views\Mail\Body\EmailConfirmed.cshtml" />
     <Content Include="Views\Mail\Body\EmailRequested.cshtml" />
     <Content Include="Views\Mail\Body\EmailTrialed.cshtml" />
+    <Content Include="Views\Calendar\Index.cshtml" />
     <None Include="Web References\myAD\ADInfo.disco" />
     <Content Include="Views\Web.config" />
     <Content Include="Views\_ViewStart.cshtml" />
