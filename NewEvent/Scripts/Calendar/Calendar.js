@@ -9,6 +9,28 @@ $(document).ready(function () {
     var d = date.getDate();
     var m = date.getMonth();
     var y = date.getFullYear();
+
+    var calendarEl = document.getElementById('calendar');
+    var calendar = new FullCalendar.Calendar(calendarEl, {
+        initialView: 'dayGridMonth',
+        themeSystem: 'bootstrap',
+        customButtons: {
+            openNewEvent: {
+              text: 'New Event',
+              click: function() {
+                alert('clicked the custom button!');
+              }
+            }
+          },
+        headerToolbar: { 
+            left: 'prev,next openNewEvent',
+            center: 'title',
+            right: 'listWeek,dayGridWeek,dayGridMonth' 
+        }, // buttons for switching between views
+    });
+    calendar.render();
+
+    return;
     $('#calendar').fullCalendar({
         timeFormat: 'H:mm',
         editable: true,      

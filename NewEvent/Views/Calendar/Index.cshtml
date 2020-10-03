@@ -54,6 +54,10 @@
     .btn-right{
         border-radius: 0px 5px 5px 0px;
     }
+
+    .fc-daygrid-body, .fc-scrollgrid-sync-table, .fc-col-header {
+        width: 100% !important;
+    }
 </style>
 <!-- Content Wrapper. Contains page content -->
 @using (Html.BeginForm("Index", "Home", FormMethod.Post))
@@ -82,12 +86,6 @@
     </section>
     <!-- Main content -->
     <section class="content">
-        <div class="container-fluid" style="display:none">
-            <h5 class="mb-2">Info Box</h5>
-        </div>
-    </section>
-    <!-- Main content -->
-    <section class="content">
         <div class="container-fluid">
             <div class="row">
                 <!-- left column -->
@@ -100,19 +98,11 @@
 
                         <div class="card-body">
                             <div class="row">
-                                <div id='calendar' class="col-xl-12 col-lg-9 col-md-8"></div>
+                                <div class="col-md-2"></div>
+                                <div id='calendar' class="col-md-12"></div>
                             </div>
                         </div>
                         <!-- /.card-body -->
-                        <div class="card-footer">
-                            <button type="submit" class="btn btn-default" id="clear_btn">Clear</button>
-                            @* <button type="submit" class="btn btn-primary float-right" style="margin-left: 5px;"><i class="fa fa-file-archive-o"></i>&nbsp;&nbsp;Report</button> *@
-                            <button id="search" type="submit" value="search" class="btn btn-info float-right"><i class="fa  fa-search"></i>&nbsp;&nbsp;Search</button>
-                        </div>
-
-
-
-
                     </div>
                     <!-- /.card -->
                 </div>
