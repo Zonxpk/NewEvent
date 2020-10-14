@@ -25,15 +25,15 @@
             var SetDepartmentPath = '@Url.Action("SetDepartment", "Login")';
             var SetDepartmentAltPath = '@Url.Action("SetDepartmentAlt", "Login")';
             var GetDepartmentListByUserIDPath = '@Url.Action("GetDepartmentListByUserID", "Login")';
-            var NavigateToHome = '@Url.Action("Index", "Home")';
+            var NavigateToCalendar = '@Url.Action("Index", "Calendar")';
             var UrlTopicID = '@((string) Session["RedirectID"] != null ? Session["RedirectID"].ToString() : "")';
             var NavigateToPrevious = `@((string) Session["RedirectID"] != null ? @Url.Action("Index", RedirectMode , new { id = Session["RedirectID"].ToString()}) : @Url.Action("Index", RedirectMode))`;
             var GetDepartmentListPath = '@Url.Action("GetDepartment", "Request")';
 
         </script>
 
-        <script src="~/Scripts/login/login.js"></script>
-        <script src="~/Scripts/Shared/Shared.js"></script>
+        <script src="~/Scripts/login/login.js?mode=newev"></script>
+        <script src="~/Scripts/Shared/Shared.js?mode=newev"></script>
 
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">

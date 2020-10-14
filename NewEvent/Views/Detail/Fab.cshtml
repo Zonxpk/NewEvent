@@ -123,42 +123,22 @@
                         </div>
                     </fieldset>
                     <fieldset data-step="2">
-                        <div class="row mb-2">
-                            <div class="col-sm-2 col-form-label">
-                                <label>Cause :</label>
-                            </div>
-                            <div class="col-sm-10 col-form-label pl-0">
-                                <textarea name="desc" type="text" minlength="15" class="form-control" placeholder="ระบุอย่างต่ำ 15 ตัวอักษร" style="height: 12vh;"></textarea>
-                            </div>
-                        </div>
-                        <div class="row mb-2">
-                            <div class="col-sm-2 col-form-label">
-                                <label>Action :</label>
-                            </div>
-                            <div class="col-sm-10 col-form-label pl-0">
-                                <textarea name="desc" type="text" minlength="15" class="form-control" placeholder="ระบุอย่างต่ำ 15 ตัวอักษร" style="height: 12vh;"></textarea>
-                            </div>
-                        </div>
-                        <div class="row mb-2">
-                            <div class="col-sm-2 col-form-label">
-                                <label>Next Action :</label>
-                            </div>
-                            <div class="col-sm-10 col-form-label pl-0">
-                                <textarea name="desc" type="text" minlength="15" class="form-control" placeholder="ระบุอย่างต่ำ 15 ตัวอักษร" style="height: 12vh;"></textarea>
-                            </div>
-                        </div>
-                    </fieldset>
-                    <fieldset data-step="3">
-                        @foreach(var DepartmentGroup in Model){
-                            <fieldset class="group border p-2"> 
-                                @{var departMentGroupName = DepartmentGroup.Name.Replace("_", " ");}
-                                <legend class="w-auto"> <input type="checkbox" class="checkAll qForm" id="rs-@DepartmentGroup.Name"/> <label for="rs-@DepartmentGroup.Name" style="display: contents;">@departMentGroupName</label></legend> 
-                                <ul class="checkbox"> 
-                                    @foreach(var Department in DepartmentGroup.Department){
-                                        <li><input type="checkbox" class="rsm_related_radio checkSingle rs-@DepartmentGroup.Name qForm" id="rs-@Department.ID" value="1" name="@Department.Name" /><label for="rs-@Department.ID">@Department.Name</label></li> 
-                                    }
-                                </ul> 
-                            </fieldset> 
+                        @{
+                        try{
+                            foreach(var DepartmentGroup in Model){
+                                <fieldset class="group border p-2"> 
+                                    @{var departMentGroupName = DepartmentGroup.Name.Replace("_", " ");}
+                                    <legend class="w-auto"> <input type="checkbox" class="checkAll qForm" id="rs-@DepartmentGroup.Name"/> <label for="rs-@DepartmentGroup.Name" style="display: contents;">@departMentGroupName</label></legend> 
+                                    <ul class="checkbox"> 
+                                        @foreach(var Department in DepartmentGroup.Department){
+                                            <li><input type="checkbox" class="rsm_related_radio checkSingle rs-@DepartmentGroup.Name qForm" id="rs-@Department.ID" value="1" name="@Department.Name" /><label for="rs-@Department.ID">@Department.Name</label></li> 
+                                        }
+                                    </ul> 
+                                </fieldset> 
+                            }
+                        }catch(Exception err){
+
+                        }
                         }
                     </fieldset>
                     </form>

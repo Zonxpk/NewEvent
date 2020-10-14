@@ -1,0 +1,217 @@
+﻿<style>
+    .modal-content{
+        box-shadow: none;
+    }
+
+    ul.checkbox  { 
+        margin: 0; 
+        padding: 0; 
+        margin-left: 20px; 
+        list-style: none; 
+    } 
+
+    ul.checkbox li input { 
+        margin-right: .25em; 
+    } 
+
+    ul.checkbox li { 
+        border: 1px transparent solid; 
+        display:inline-block;
+        width:12em;
+    } 
+
+    ul.checkbox li label { 
+        margin-left: ; 
+    } 
+
+    .modal {
+        z-index: 150;
+    }
+
+    .modal-dialog{
+        top: -10vh;
+    }
+
+    .modal-body{
+        overflow-y: auto;
+        height: 60vh;
+    }
+
+    .modal-lg, .modal-xl {
+        max-width: 1030px;
+    }
+
+    #for_datepicker > div.daterangepicker.ltr.single.opensright.show-calendar.drop-up {
+        top: 34.333px !important;
+    }
+    #detail_event_table > tbody > tr > td:nth-child(2){
+        text-align: left;
+    }
+
+</style>
+
+   <!-- Modal -->
+    <div class="modal fade" id="new_event_modal" tabindex="-1" role="dialog" aria-labelledby="new_event_modal" aria-modal="true" data-current-step="1">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="resubmit_modal">New Event</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true" style="font-size:27px">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+              <div class="row">
+                <div class="col-sm-12">
+                    <form action method="post" id="resubmit_form">
+                    <fieldset data-step="1">
+                        <div class="row">
+                            <label class="col-sm-2 col-form-label">Product Type<span class="text-danger">*</span></label>
+                            <div class="col-sm-10 col-form-label">
+                                <div class="form-group">
+                                @foreach(var Type in Model){
+                                    <label class="mr-3">
+                                        <input type="radio" name="productType" value="@Type.ID" class="flat-red @(Type.ID == 8?"other":"")" required>
+                                        @Type.Name
+                                        <span class="productType-desc"></span>
+                                    </label>
+                                }
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-2"></div>
+                            <div class="col-sm-5">
+                                <div class="form-group">
+                                    <label>Production</label>
+                                    <select class="form-control select2" name="prod" style="width: 100%;">
+                                        <option disabled="disabled" value="default"selected="selected">Select Production</option>
+                                        @foreach(var prod in ViewBag.Productions){
+                                            <option value="@prod.ShortName" @(prod.ShortName == Session["Department"].ToString() ? "selected" : "")>@prod.FullName</option>
+                                        }
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-sm-5">
+                                <div class="form-group">
+                                    <label>Line</label>
+                                    <select class="form-control select2" name="line" style="width: 100%;">
+                                        <option disabled value="default" selected>Line</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-2"></div>
+                            <div class="col-sm-5">
+                                <div class="form-group">
+                                    <label>Event</label>
+                                    <input type="text" name="model" class="form-control" id="P_model" placeholder="Enter Model" required>
+                                </div>
+                            </div>
+                            <div class="col-sm-5">
+                                <div class="form-group">
+                                    <label>Q'ty</label>
+                                    <input type="text" name="partNo" class="form-control" id="P_partno" placeholder="Enter Part No" required>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-2"></div>
+                            <div class="col-sm-5">
+                                <div class="form-group">
+                                    <label>Model</label>
+                                    <input type="text" name="partName" class="form-control" id="P_partname" placeholder="Enter Part Name" required>
+                                </div>
+                            </div>
+                            <div class="col-sm-5">
+                                <div class="form-group has-error">
+                                    <label>Part No</label>
+                                    <input type="text" name="processName" class="form-control" id="P_processname" placeholder="Enter Process Name" required>
+                                </div>
+                            </div>
+                        </div>
+
+                            <hr>
+
+                        <div class="form-group row">
+                            <div id="for_datepicker" style="top: 368px; !important"></div>
+                            <label class="col-sm-2 col-form-label">Event Date<span class="text-danger">*</span> </label>
+                            <div class="col-sm-5">
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                    <span class="input-group-text"><i class="far fa-calendar-alt"></i></span>
+                                    </div>
+                                        <input data-toggle="datepicker" class="form-control required" placeholder="Select Date " autocomplete="off" name="timing" data-inputmask-alias="datetime" data-inputmask-inputformat="dd-MM-yyyy" data-mask="99-99-9999" style="border-radius: 0px 5px 5px 0px; !important" required>
+                                        <div data-toggle="datepicker"></div>
+                                </div>
+                            </div>
+                            <div class="col-sm-6"></div>
+                        </div>
+
+                        <div class="form-group row">
+                            <label class="col-sm-2 col-form-label">Change Details & Introduction </label>
+                            <div class="col-sm-10">
+                                <div class="form-group">
+                                    <textarea class="textareaDetails" name="detail" placeholder="Place some text here"></textarea>
+                                </div>
+                            </div>
+                        </div>
+
+                        <hr>
+
+                        <div class="form-group row">
+                            <label for="inputSkills" class="col-sm-2 col-form-label">Attach File</label>
+                            <div class="col-sm-10">
+                                <input type="file" class="my-pond" name="filepond"/>
+                            </div>
+                        </div>
+                    </fieldset>
+                    <fieldset data-step='2'>
+                        <table id="detail_event_table" class="table table-bordered table-hover txtcenter" width="100%" >
+                                <thead>
+                                    <tr>
+                                        <th width="20%">Model No.</th>
+                                        <th width="50%">Event</th>
+                                        <th width="15%">Q'ty</th>
+                                        @* <th width="2">NG Q'ty</th>
+                                        <th width="46">Defect Detail</th> *@
+                                        <th width="15%">More</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                    <form id="detail_event_form">
+                                        <td><textarea name="dt_model" class="form-control" rows="1" required></textarea></td>
+                                        <td><textarea name="dt_event" class="form-control" rows="1" required></textarea></td>
+                                        <td><textarea name="dt_qty" class="form-control" rows="1" required></textarea></td>
+                                        @* <td><textarea name="dt_ng_qty" class="form-control" rows="1" required></textarea></td>
+                                        <td><textarea name="dt_defect" class="form-control" rows="1" required></textarea></td> *@
+                                        @* <td><textarea name="dt_fg" class="form-control" rows="1" required></textarea></td> *@
+                                        @* <td><textarea name="dt_percent_ng" class="form-control" rows="1" required></textarea></td> *@
+                                        <td><button type="button" id="add_detail" value="detail" class="btn btn-success"><i class="fa fa-plus"></i>&nbsp;&nbsp;Add</button></td>
+                                    </form>
+                                    </tr>
+                                </tbody>
+                        </table>
+                    </fieldset>
+                    </form>
+                </div>
+            </div>
+            </div>
+            <div class="modal-footer">
+                @* <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button> *@
+                @* <button type="button" class="btn btn-primary">Save changes</button> *@
+                <button type="button" class="btn btn-secondary" data-step-to="prev">
+                    Previous
+                </button>
+                <button type="button" class="btn btn-success" data-step-to="next">
+                    Next
+                </button>
+                <button type="submit" form="resubmit_form rsm-submit" class="btn btn-info rsm_submit">
+                    Submit
+                </button>
+            </div>
+            </div>
+        </div>
+    </div>

@@ -36,8 +36,7 @@
     </script>    
     
     <!-- CSS loading -->
-    <link href="~/Plugin/loading.css" rel="stylesheet">
-    <link href="~/Plugin/animsition/dist/css/animsition.css" rel="stylesheet" />
+    <link href="~/Plugin/loading-rhombus.css" rel="stylesheet">
 
     <style>
         body {
@@ -199,6 +198,17 @@
             overflow-y: auto;
         }
 
+        .note-editor.note-frame {
+            border: 1px solid #a9a9a957;
+        }
+
+        input::-webkit-outer-spin-button,
+        input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+
     </style>
     
 
@@ -234,15 +244,6 @@
             -->
             <!-- Right navbar links -->
             <ul class="navbar-nav ml-auto">
-                <!-- Messages Dropdown Menu -->
-                @NodeNoti(req_list,"Request")
-                <!-- Messages Dropdown Menu -->
-                @NodeNoti(rv_list,"Review")
-                <!-- Notifications Dropdown Menu -->
-                @NodeNoti(tr_list,"Trial & Confirm")
-                <!-- Notifications Dropdown Menu -->
-                @NodeNoti(cf_list,"Initial Production")
-                <!-- Notifications Dropdown Menu -->
                 @if((string) Session["Position"] == "Admin"){
                 <li class="nav-item">
                     <a class="nav-link pr-0" id="change_dept_btn">
@@ -290,10 +291,16 @@
                 <!-- Sidebar Menu -->
                 <nav class="mt-2">
                     <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
-                        <!-- Add icons to the links using the .nav-icon class
-    with font-awesome or any other icon font library -->
+                        @* <li id="menu1" class="nav-item">
+                            <a id="menu1-1" href="@Url.Action("Index", "Home")" class="nav-link ">
+                                <i class="nav-icon fas fa-tachometer-alt"></i>
+                                <p>
+                                    Main menu
+                                </p>
+                            </a>
+                        </li> *@
                         <li id="menu1" class="nav-item">
-                            <a id="menu1-1" href="@Url.Action("Index", "Home")" class="nav-link animsition-link">
+                            <a id="menu1-1" href="@Url.Action("Index", "Calendar")" class="nav-link ">
                                 <i class="nav-icon fas fa-tachometer-alt"></i>
                                 <p>
                                     Main menu
@@ -301,19 +308,10 @@
                                 </p>
                             </a>
                         </li>
-                        <li id="menu1" class="nav-item">
-                            <a id="menu1-1" href="@Url.Action("Index", "Calendar")" class="nav-link animsition-link">
-                                <i class="nav-icon fas fa-tachometer-alt"></i>
-                                <p>
-                                    Main menu
-                                    @* <span class="right badge badge-danger">New</span> *@
-                                </p>
-                            </a>
-                        </li>
-                        @if (Session["Department"].ToString() != "Guest")
+                        @* @if (Session["Department"].ToString() != "Guest")
                         {
                             <li id="menu2" class="nav-item">
-                                <a id="menu2-1" href="@Url.Action("Index", "Request")" class="nav-link animsition-link">
+                                <a id="menu2-1" href="@Url.Action("Index", "Request")" class="nav-link ">
                                     <i class="nav-icon fas fa-edit"></i>
 
                                     <p>
@@ -321,23 +319,31 @@
                                     </p>
                                 </a>
                             </li>
-                        }
-                        <li id="menu3" class="nav-item" style="display:none">
-                            <a id="menu3-1" href="@Url.Action("Index", "Detail")" class="nav-link animsition-link">
+                        } *@
+                        <li id="menu3" class="nav-item">
+                            <a id="menu3-1" href="@Url.Action("Index", "Detail")" class="nav-link ">
                                 <i class="nav-icon far fa-clone"></i>
                                 <p>
                                     Detail
                                 </p>
                             </a>
                         </li>
-                        <li class="nav-item">
-                            <a href="~/manual.pdf"  class="nav-link animsition-link">
+                        <li id="menu3" class="nav-item">
+                            <a id="menu3-1" href="@Url.Action("Index", "User")" class="nav-link ">
+                                <i class="nav-icon far fa-clone"></i>
+                                <p>
+                                    User
+                                </p>
+                            </a>
+                        </li>
+                        @* <li class="nav-item">
+                            <a href="~/manual.pdf"  class="nav-link ">
                                 <i class="nav-icon far fa-clone"></i>
                                 <p>
                                     Manual
                                 </p>
                             </a>
-                        </li>
+                        </li> *@
                     </ul>
                 </nav>
                 <!-- /.sidebar-menu -->
@@ -347,10 +353,29 @@
 
         <!-- Content Wrapper. Contains page content -->
         <div class="">
-        @* <div class="animsition"> *@
             <div class="loading hidden" id="loading">
-            @* <div class="loading" id="loading" style="display:none"> *@
-                <img src="~/Plugin/img/loading-3.svg" style="width:auto;height:auto;">
+                <div class="breeding-rhombus-spinner" style="position:fixed;top:50%;left:50%;z-index:20;">
+                    <div class="rhombus child-1"></div>
+                    <div class="rhombus child-2"></div>
+                    <div class="rhombus child-3"></div>
+                    <div class="rhombus child-4"></div>
+                    <div class="rhombus child-5"></div>
+                    <div class="rhombus child-6"></div>
+                    <div class="rhombus child-7"></div>
+                    <div class="rhombus child-8"></div>
+                    <div class="rhombus big"></div>
+                </div>
+                <div style="
+                    content: '';
+                    display: block;
+                    position: fixed;
+                    top: 0;
+                    left: 0;
+                    width: 100%;
+                    height: 100%;
+                    z-index: 19;
+                    background-color: rgba(255, 255, 255, 0.762);
+                "></div>
             </div>
             @RenderBody()
         </div>
@@ -365,7 +390,7 @@
         <footer class="main-footer" style="position: unset;">
             <strong>Copyright &copy; 2019-2020 IT Department Design Team</strong> All rights reserved.
             <div class="float-right d-none d-sm-inline-block">
-                <b>Version</b> Alpha 1.0
+                <b>Version</b> Alpha 1.1
             </div>
         </footer>
     </div>
@@ -423,11 +448,21 @@
     <script src="~/tmp/plugins/daterangepicker/daterangepicker.js"></script>
 
 
-    <script src="~/Plugin/animsition/dist/js/animsition.js"></script>
+    <script src="~/Plugin/autosize.js"></script>
+
+    <link href="~/Plugin/amplify-master/docs/amplify.css" rel="stylesheet" />
+    <script src="~/Plugin/amplify-master/docs/amplify.min.js" defer></script>
+    
+    <link href="~/Plugin/notyf/notyf.min.css" rel="stylesheet" />
+    <script src="~/Plugin/notyf/notyf.min.js"></script>
+
+    <script src="~/Plugin/zooming-master/build/zooming.js"></script>
 
     <script src="~/Scripts/Shared/Shared.js"></script>
     
     <script src="~/Scripts/jquery.transit.min.js"></script> 
+
+
 
     @* <link href="~/Plugin/fullcalendar/css/fullcalendar.min.css" rel="stylesheet" />
     <script src='~/Plugin/fullcalendar/js/fullcalendar.min.js'></script> *@
@@ -451,67 +486,3 @@
 </body>
 
 </html>
-
-@helper NodeNoti(List<TopicNoti> ElementList, string Mode){
-    <li class="nav-item dropdown">
-        <a class="nav-link pr-0" data-toggle="dropdown" href='#'>
-            @if(ElementList.Count() > 0){
-                <span class="badge badge-danger navbar-badge">@ElementList.Count()</span>
-                <input type="submit" class="btn btn-block btn-sm btn-outline-primary" value="@Mode">
-            }else{
-                <input type="submit" class="btn btn-block btn-sm btn-outline-secondary" value="@Mode" disabled>
-            }
-            
-
-        </a>
-        <div class="sub-nav-link dropdown-menu dropdown-menu-lg dropdown-menu-right">
-            @if(ElementList != null){
-                foreach(var Element in ElementList){
-                    <a href="~/Detail/?id=@Element.Code" class="dropdown-item">
-                    <!-- Message Start -->
-                    <div class="media">
-                        <img src="~/tmp/dist/img/doc.png" alt="User Avatar" class="img-size-50 mr-3 img-circle">
-                        <div class="media-body">
-                            <h3 class="dropdown-item-title">
-                                @Element.Code
-
-                                @if(Element.SubStatus == "Pending"){
-                                    <span class='badge badge-pill badge-secondary'> PENDING
-                                        <i class='fa fa-hourglass-half '></i>
-                                    </span> 
-                                }else if(Element.SubStatus == "Issued"){
-                                    <span class='badge badge-pill badge-warning'>ISSUED
-                                        <i class='fa fa-clock '></i>
-                                    </span> 
-                                }else if(Element.SubStatus == "Approved"){
-                                    <span class='badge badge-pill badge-primary'>APPROVED
-                                        <i class='fa fa-clock '></i>
-                                    </span> 
-                                }
-                                
-                            </h3>
-
-                            @if(Element.SubStatus == "Pending"){
-                                <p class="text-sm">Waiting for review</p>
-                            }else if(Element.SubStatus == "Issued"){
-                                <p class="text-sm">Waiting for approve</p>
-                            }else if(Element.SubStatus == "Approved"){
-                                if(Mode == "Request"){
-                                    <p class="text-sm">Waiting for PE Process</p>
-                                }else{
-                                    <p class="text-sm">Waiting for QC</p>
-                                }
-                            }
-                            
-                            <p class="text-sm text-muted"><i class="far fa-clock mr-1"></i>@Element.Time_insert.StringToDateTimeShort()</p>
-                        </div>
-                    </div>
-                    <!-- Message End -->
-                </a>
-                <div class="dropdown-divider"></div>
-                }
-            }
-            @* <a href="#" class="dropdown-item dropdown-footer">See All Document @Mode</a> *@
-        </div>
-    </li>
-}

@@ -315,54 +315,7 @@ namespace NewEvent.Models
             }
         }
 
-        public Trial UpdateTrial(long topic_id, string topic_code,string desc, string dept, string user){
-            try{
-                var sql= $@"INSERT INTO Trial (Topic, FK_Topic, Detail, [Date], [User], Revision, Department, Status, UpdateDate, UpdateBy) 
-                OUTPUT Inserted.ID, Inserted.Revision
-                VALUES('{topic_code}', {topic_id}, '{desc.ReplaceSingleQuote()}', '{date}','{user}', (
-                    SELECT Revision+1 FROM Trial,
-                    (SELECT MAX(Revision) as Version, Department as dept FROM Trial WHERE Topic = '{topic_code}' AND Department = '{dept}' Group by Department) lastest
-                    WHERE Topic = '{topic_code}' AND Department = '{dept}'
-                    AND Trial.Revision  = lastest.Version AND Trial.Department = lastest.dept)
-                , '{dept}', 3, '{date}', '{user}');";
-                var result = DB_CCS.Database.SqlQuery<Trial>(sql).First();
-                return result;
-            }catch(Exception ex){
-                return new Trial();
-            }
-        }
 
-        public Confirm UpdateConfirm(long topic_id, string topic_code,string desc, string dept, string user){
-            try{
-                var sql= $@"INSERT INTO Confirm (Topic, FK_Topic, Detail, [Date], [User], Revision, Department, Status, UpdateDate, UpdateBy) 
-                OUTPUT Inserted.ID ,Inserted.Revision 
-                VALUES('{topic_code}', {topic_id}, '{desc.ReplaceSingleQuote()}', '{date}','{user}', (
-                    SELECT Revision+1 FROM Confirm,
-                    (SELECT MAX(Revision) as Version, Department as dept FROM Confirm WHERE Topic = '{topic_code}' AND Department = '{dept}' Group by Department) lastest
-                    WHERE Topic = '{topic_code}' AND Department = '{dept}'
-                    AND Confirm.Revision  = lastest.Version AND Confirm.Department = lastest.dept)
-                , '{dept}', 3, '{date}', '{user}');";
-                var result = DB_CCS.Database.SqlQuery<Confirm>(sql).First();
-                return result;
-            }catch(Exception ex){
-                return new Confirm();
-            }
-        }
-
-        public List<Trial> GetTrialByTopicCode(string topic_code){
-            try{
-                var sql = $@"SELECT ID, Topic, Detail, [Date], [User], Department, Status, Revision, ApprovedBy, UpdateBy, UpdateDate, ApprovedDate 
-                FROM Trial,
-                    (SELECT MAX(Revision) as Version, Department as dept FROM Trial WHERE Topic = '{topic_code}' Group by Department) lastest
-                WHERE Topic = '{topic_code}' 
-                AND Trial.Revision  = lastest.Version AND Trial.Department = lastest.dept;";
-                var trial = DB_CCS.Database.SqlQuery<Trial>(sql).ToList();
-                return trial;
-            }catch(Exception ex){
-                List<Trial> blank_trial = new List<Trial>();
-                return blank_trial;
-            }
-        }
 
         
         public long InsertConfirm(long topic_id, string topic_code,string desc, string department, string user){
@@ -374,21 +327,6 @@ namespace NewEvent.Models
                 return result;
             }catch(Exception ex){
                 return 0;
-            }
-        }
-
-        public List<Confirm> GetConfirmByTopicCode(string topic_code){
-            try{
-                var sql = $@"SELECT ID, Topic, Detail, [Date], [User], Department, Status, Revision, ApprovedBy, UpdateBy, UpdateDate, ApprovedDate 
-                FROM Confirm,
-                    (SELECT MAX(Revision) as Version, Department as dept FROM Confirm WHERE Topic = '{topic_code}' Group by Department) lastest
-                WHERE Topic = '{topic_code}' 
-                AND Confirm.Revision  = lastest.Version AND Confirm.Department = lastest.dept;";
-                var trial = DB_CCS.Database.SqlQuery<Confirm>(sql).ToList();
-                return trial;
-            }catch(Exception ex){
-                List<Confirm> blank_confirm = new List<Confirm>();
-                return blank_confirm;
             }
         }
 
@@ -421,34 +359,6 @@ namespace NewEvent.Models
                 return result;
             }catch(Exception ex){
                 return new List<Review>();
-            }
-        }
-
-        public List<Trial> CheckAllTrialBeforeApprove(string topic_code){
-            try{
-                var sql = $@"SELECT ID, Topic,Department, Status FROM Trial ,
-                (SELECT MAX(Revision) as Version, Department as dept FROM Trial WHERE Topic = '{topic_code}' Group by Department ) lastest
-                WHERE Topic = '{topic_code}'                    
-                AND Trial.Revision  = lastest.Version AND Trial.Department  = lastest.dept 
-                AND Trial.Department != 'QC1' AND Trial.Department != 'QC2' AND Trial.Department != 'QC3';";
-                var result = DB_CCS.Database.SqlQuery<Trial>(sql).ToList();
-                return result;
-            }catch(Exception ex){
-                return new List<Trial>();
-            }
-        }
-
-        public List<Confirm> CheckAllConfirmBeforeApprove(string topic_code){
-            try{
-                var sql = $@"SELECT ID, Topic,Department, Status FROM Confirm ,
-                (SELECT MAX(Revision) as Version, Department as dept FROM Confirm WHERE Topic = '{topic_code}' Group by Department ) lastest
-                WHERE Topic = '{topic_code}'                    
-                AND Confirm.Revision  = lastest.Version AND Confirm.Department  = lastest.dept 
-                AND Confirm.Department != 'QC1' AND Confirm.Department != 'QC2' AND Confirm.Department != 'QC3';";
-                var result = DB_CCS.Database.SqlQuery<Confirm>(sql).ToList();
-                return result;
-            }catch(Exception ex){
-                return new List<Confirm>();
             }
         }
 

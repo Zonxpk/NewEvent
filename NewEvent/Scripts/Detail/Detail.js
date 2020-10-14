@@ -20,14 +20,44 @@ var removeDuplicates = (names) => names.filter((v,i) => names.indexOf(v) === i)
 var new_rv = [];
 
 $(() => {
-    var rv_form = $('form#review').serializeArray();
-    rv_form.forEach(function(rv){
-        new_rv.push(rv.name.split("-")[1]);
+
+    new Zooming().listen('img');
+    
+    table_dt = $('#detail_event_table').DataTable({
+        columnDefs:[{
+            targets: [3,4,6],
+            orderable: false,
+        }],
+        column:[]
+    });
+    
+    autosize(document.querySelectorAll('textarea'));
+
+    $('[data-toggle="datepicker"]').daterangepicker({
+        singleDatePicker: true,
+        timePicker: true,
+        startDate: moment().startOf('second'),
+        locale:{
+            format: 'DD-MM-YYYY hh:mm A'
+        },
+        parentEl: "#for_datepicker",
+        drops: "up"
     });
 
-    if(topic_status == "7" || !isQC || !isReview){
-        $(".zoom-fab#change_status").addClass("hide-fab");
-    }
+/* ---------------------------------------------------------------------------------------------- */
+/*                                         Calculate % NG                                         */
+/* ---------------------------------------------------------------------------------------------- */
+    $("#detail_event_table").on("input","tr [name='dt_ng_qty'], tr [name='dt_fg']", function() {
+        let cells = $(this).closest("tr").children().children();
+        let ng_qty = cells.closest("[name='dt_ng_qty']");
+        let fg = cells.closest("[name='dt_fg']");
+       
+        if(Number(ng_qty.val()) > Number(fg.val() | 0)) ng_qty.val(fg.val() | 0);
+       
+        let percent_ng = ng_qty.val() * 100 / fg.val() | 0
+        cells.closest("[name='dt_percent_ng']").val( percent_ng + "%"); 
+
+    });
 
 /* -------------------------------------------------------------------------- */
 /*                                  Go to top                                 */
@@ -47,29 +77,6 @@ $(() => {
         e.preventDefault();
         $('html, body').animate({ scrollTop: 0 }, '300');
     });
-
-/* -------------------------------------------------------------------------- */
-/*                             Resubmit's Validate                            */
-/* -------------------------------------------------------------------------- */
-
-var rsm_validator = $('#resubmit_form').validate({
-    rules: {
-        desc: {required: true,},
-        due_date: {required: true,date: true}
-    },
-    messages: {
-        desc: {required: "Please enter a description",},
-        due_date: {required: "Please enter a due date",date: "Please enter a valid date"}
-    },
-    errorElement: 'span',
-    errorPlacement: function (error, element) {
-      error.addClass('invalid-feedback');
-      element.closest(".col-form-label").append(error);
-      $(".btn-success").prop('disabled', true);
-    },
-    highlight: function (element, errorClass, validClass) {$(element).addClass('is-invalid');},
-    unhighlight: function (element, errorClass, validClass) {$(element).removeClass('is-invalid');}
-});
 
 /* -------------------------------------------------------------------------- */
 /*                           Resubmit's Wizard modal                          */
@@ -111,29 +118,6 @@ var rsm_validator = $('#resubmit_form').validate({
         }
     });
     
-/* -------------------------------------------------------------------------- */
-/*                           Related's Wizard modal                           */
-/* -------------------------------------------------------------------------- */
-
-// $("#accident_modal").modalWizard();
-// $("#accident_modal").on("navigate", (e, navDir, stepNumber) => {
-// });
-
-/* -------------------------------------------------------------------------- */
-/*                             Resubmit's Validate                            */
-/* -------------------------------------------------------------------------- */
-
-    $("#resubmit_form [name='desc'], #resubmit_form [name='due_date']").on("keydown keyup click change", () => {
-        if($("#resubmit_form [name='desc']").val() != "" && $("#resubmit_form [name='due_date']").val() !== ""){
-            resubmit_formIsEmpty = false;
-        }else{
-            resubmit_formIsEmpty = true;
-        }
-        if(!resubmit_formIsEmpty){
-            $(".btn-success").prop('disabled', (rsm_validator.form()) ? false : true); 
-        }
-    });
-
 /* -------------------------------------------------------------------------- */
 /*                        Resubmit Department checkbox                        */
 /* -------------------------------------------------------------------------- */
@@ -210,15 +194,11 @@ $.each(DepartmentLists, (key,val) => {
         $(".rsm-submit").prop('disabled', (checkbox_dept > 0) ? false : true);
     }
 
-    $('[data-toggle="datepicker"]').datepicker({
-        format: 'dd-mm-yyyy'
-    });
-    
 /* -------------------------------------------------------------------------- */
 /*                                Topic approve                               */
 /* -------------------------------------------------------------------------- */
 
-    $("#tp_approve").click(() => {
+    $("#finish").click(() => {
         swal({
             title: "งานดังกล่าวพบปัญหาหรือไม่", 
             text: "หากไม่พบปัญหา สามารถกด OK เพื่อสิ้นสุด Event ดังกล่าว", 
@@ -246,223 +226,12 @@ $.each(DepartmentLists, (key,val) => {
             }
         });
     })
-/* -------------------------------------------------------------------------- */
-/*                             Submit review topic                            */
-/* -------------------------------------------------------------------------- */
-
-$("form#review").submit((e) => {
-    rv_submit = true;
-    let RadioNotValidate = checkRadioAndInput(new_rv,rv_submit);
-    let InputNotValidate = checkInputRequired();
-    if(RadioNotValidate || InputNotValidate){
-        return; 
-    }
-
-    e.preventDefault();
-    $('#loading').removeClass('hidden')
-    let rv_form = SerializeReviewForm();
-    $.post(InsertReviewPath, (result) => {
-        if(result.mail != ""){
-            $.post(GenerateMailPath,{ 'mode': result.mail, 'topic_code':topic_code, 'dept':result.dept, 'pos':result.pos }).fail((error) => {
-                console.error(error);
-                swal("Error", "Cannot send email to Requestor, Please try again", "error");
-                return;
-            })
-        }
-        var promises = [];
-        files = file_list;
-        console.log("files",files);
-        
-        for(var index in files){
-            files[index].file = files[index].detail.file;
-            delete files[index].detail;
-        }
-
-        files.forEach(element => {
-            var Data = new FormData();
-            Data.append("file",element.file);
-            Data.append("description",element.description);
-            promises.push($.ajax({
-                type: "POST",
-                url: InsertFilePath,
-                data: Data,
-                cache: false,
-                processData: false,
-                contentType: false,
-                error: function() {
-                    swal("Error", "Upload file not success", "error");
-                }
-            }));
-        });
-
-        rv_form.forEach(element => {
-            console.log(element);
-            promises.push(
-                $.post(InsertReviewItemPath, {
-                    'status' : element.status,
-                    'description' : element.desc,
-                    'id' : element.id,
-                },(data) => {
-                    console.log('Inserted item');
-                }).fail(() => {
-                    alert('error handling here');
-                })
-            )
-        });
-        
-        Promise.all(promises).then(() => {
-            $('#loading').addClass('hidden')
-            $("#ReviewSubmit").prop("disabled",true)
-            swal("Success", "Insert Complete", "success").then(setTimeout(() => { location.reload(); }, 1500));
-        })
-    }).fail(() => {
-        setTimeout(() => { location.reload(); }, 1500);
-    });
-
-});
-
-/* -------------------------------------------------------------------------- */
-/*                             Submit trial topic                             */
-/* -------------------------------------------------------------------------- */
-
-$("form#Trial").submit((e) => {
-    e.preventDefault();
-    $('#loading').removeClass('hidden')
-        let trial_form = $("form#Trial").serializeArray();
-        var promises = [];
-
-        files = file_list;
-        console.log("files",files);
-        
-        for(var index in files){
-            files[index].file = files[index].detail.file;
-            delete files[index].detail;
-        }
-
-        promises.push($.post(InsertTrialPath,{ desc: trial_form[0].value},(result) => {
-            if(result.mail != ""){
-                $.post(GenerateMailPath,{ 'mode': result.mail, 'topic_code':topic_code, 'dept':result.dept, 'pos':result.pos }).fail((error) => {
-                    console.error(error);
-                    swal("Error", "Cannot send email to Requestor, Please try again", "error");
-                    return;
-                })
-            }
-            console.log('Inserted trial');
-            files.forEach(element => {
-                var Data = new FormData();
-                Data.append("file",element.file);
-                Data.append("description",element.description);
-                promises.push($.ajax({
-                    type: "POST",
-                    url: InsertFileTrialPath,
-                    data: Data,
-                    cache: false,
-                    processData: false,
-                    contentType: false,
-                    success: function () {
-                        console.log('trial file uploaded');
-                    },error: function() {
-                        swal("Error", "Upload file not success", "error");
-                    }
-                }));
-            });
-        }).fail(() => {
-            swal("Error", "Trial is not succes, Please contact admin", "error");
-            $('#loading').addClass('hidden')
-        }));
-        
-        Promise.all(promises).then(() => {
-            $('#loading').addClass('hidden')
-            InsertReviewStatus = false;
-            $("#trial_submit").prop("disabled",true)
-            swal("Success", "Insert Complete", "success").then(setTimeout(() => { location.reload(); }, 1500));
-        })
-});
-
-
-/* -------------------------------------------------------------------------- */
-/*                               Apply resubmit                               */
-/* -------------------------------------------------------------------------- */
-    $("form#resubmit_form").submit((e) => {
-        e.preventDefault();
-        let quick_form = $(".rsm_related_radio").serializeArray();
-        for(x in quick_form){
-            quick_form[x] = quick_form[x].name;
-        }
-
-        console.log(quick_form);
-        $.post(InsertRelatedPath, {dept_list:quick_form}, () =>{
-            console.log('Related created');
-            $.post(RequestResubmitPath, $("#resubmit_form").serialize(), (res) =>{
-                console.log('Resubmit created');
-                if(res.code){
-                    moment.locale('en');
-                    $.post(GenerateMailPath,{ 'mode': 'RequestDocument', 'topic_code':topic_code, 'due_date': moment(due_date,"DD-MM-YYYY").format('D MMMM YYYY'), 'dept_arry': rsm_related_list, }).fail((error) => {
-                        console.error(error);
-                        swal("Error", "Cannot send email to Requestor, Please try again", "error");
-                        return;
-                    })
-                    swal("Success", "Resubmit Complete", "success").then(setTimeout(() => { location.reload(); }, 1500));
-                }else{
-                    swal("Error", "Resubmit Not Success, Please Try Again", "error");
-                }
-            });
-        });
-    });
 
 
 /* -------------------------------------------------------------------------- */
 /*                              Response resubmit                             */
 /* -------------------------------------------------------------------------- */
 
-    $("#submit_reply_form").click((e) => {
-        e.preventDefault();
-        $('#loading').removeClass('hidden')
-            let form_response = $("form.reply_form").serializeArray();
-            // var response_id = $("form.reply_form").attr("id");
-            // var response_id = $("form.reply_form").attr("id");
-            var promises = [];
-
-            files = file_list_rd;
-            console.log("files",files);
-            
-            for(var index in files){
-                files[index].file = files[index].detail.file;
-                delete files[index].detail;
-            }
-
-            promises.push($.post(InsertResponsePath,{ desc: form_response[0].value, resubmit_id: rsm_id},() => {
-                console.log('Inserted item');
-                files.forEach(element => {
-                    var Data = new FormData();
-                    Data.append("file",element.file);
-                    Data.append("description",element.description);
-                    promises.push($.ajax({
-                        type: "POST",
-                        url: InsertFileResponsePath,
-                        data: Data,
-                        cache: false,
-                        processData: false,
-                        contentType: false,
-                        success: function () {
-                        },
-                        error: function() {
-                            swal("Error", "Upload file not success", "error");
-                        }
-                    }));
-                });
-            }).fail(() => {
-                swal("Error", "Reply not success", "error");
-            }));
-
-            Promise.all(promises).then(() => {
-                $('#loading').addClass('hidden')
-                InsertReviewStatus = false;
-                $("#ResponseSubmit").prop("disabled",true)
-                $("#reply_modal").modal("hide")
-                swal("Success", "Insert Complete", "success").then(setTimeout(() => { location.reload(); }, 1500));
-            })
-    });
 
 
 /* ---- Clear file in filepond when changing from Resubmit topic to topic --- */
@@ -483,6 +252,54 @@ $("form#Trial").submit((e) => {
         }else{
             console.log("id matched");
         }
+    });
+
+/* ---------------------------- Change max value of FG and NG coulumn --------------------------- */
+
+    $('tr').on("input","[name='dt_qty']",function(){
+        let max_qty = this.value;
+        $(this).parent().parent().find("[name='dt_fg'],[name='dt_ng_qty']").each(function(i,e) {
+            if(e.value > max_qty) e.value = max_qty;
+            e.max = max_qty
+        });
+    })
+
+/* -------------------------------- Save able when input new data ------------------------------- */
+    $("#detail_event_table input").on("input",function(){
+        $("input[value='Update']").removeAttr("disabled");
+    });
+
+/* ------------------------------------ Save button on submit ----------------------------------- */
+    $("input[value='Update']").click(function(){
+        swal({
+            title: "ต้องการบันทึกข้อมูลหรือไม่", 
+            // text: "หากไม่พบปัญหา สามารถกด OK เพื่อสิ้นสุด Event ดังกล่าว", 
+            // closeOnClickOutside: false,
+            buttons : [true,true],
+            icon:"warning",
+        }).then((res) => {
+            if(res){
+                notyf.success('บันทึกข้อมูลสำเร็จ')
+                this.disabled = true;
+            //     $.post(ApproveTopicPath,() => {
+            //         var promises = [];
+            //         promises.push($.post(GenerateMailPath,{
+            //             'mode':(topic_code.substring(0,2) == "EX") ? 'InformUser' : 'InformPE',
+            //             'topic_code':topic_code,
+            //             'dept':(topic_code.substring(0,2) == "IN") ? pe_audit : null,
+            //         }).fail((error) => {
+            //         console.error(error);
+            //         swal("Error", "Cannot send email to Requestor, Please try again", "error");
+            //         return;
+            //     }));
+            //         swal("Success", "Approve Success", "success").then(location.reload());
+            //     }).fail( function(xhr, textStatus, errorThrown) {
+            //         console.error(xhr.responseText);
+            //         swal("Something wrong", "Please contact admin", "error");
+            //     });
+            }
+
+        });
     });
 
 });
@@ -533,17 +350,9 @@ function checkInputRequired(){
     return isNotfilled;
 }
 
-function SerializeReviewForm(){
-    var f_list = [];
-    $("form#review [data-id]:not(:disabled)").each(function (i,v) {
-        let rv_id = $(this).data('id');
-        if(f_list[`${rv_id}`] == null) f_list[`${rv_id}`] = {id:rv_id, status: null, desc: null}
-        
-        if($(this).data('type') == "status" && $(this)[0].checked == true){
-            f_list[`${rv_id}`].status = this.value;
-        }else if($(this).data('type') == "desc"){
-            f_list[`${rv_id}`].desc = this.value;
-        }
-    });
-    return f_list.filter(Boolean);
+
+function checkMax(e){
+    if(Number(e.value) > Number(e.max)){
+        e.value = e.max;
+    }
 }

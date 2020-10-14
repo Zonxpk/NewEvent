@@ -10,108 +10,45 @@ using NewEvent.Helpers;
 namespace NewEvent.Controllers{
     public class CalendarController : Controller{
 
+        private CalendarModel M_Cal;
         private HomeModel M_Home;
-        public class Line{
-            public string line { get; set; }
+        public class Production{
+            public string FullName;
+            public string ShortName;
         }
         public CalendarController(){
+            M_Cal = new CalendarModel();
             M_Home = new HomeModel();
-            if(ViewBag.QCAudit == null) ViewBag.QCAudit = M_Home.GetQcAudit();
-            if(ViewBag.PEAudit == null) ViewBag.PEAudit = M_Home.GetPEAudit();
         }
         public ActionResult Index(){
-            ViewBag.Departments = GetDepartmentList();
             if ((string)(Session["User"]) == null || (string)(Session["Department"]) == null){
                 Session["url"] = "Home";
                 return RedirectToAction("Index", "Login");
             }
-            GenerateTopicList(Session["Department"].ToString(), Session["Position"].ToString());
+            ViewData["FormProductType"] = M_Cal.GetProductType(); //Get list of product type radio
+            Production[] Productions = new Production[7];
+            for(var i=1; i<=7; i++){
+                Productions[i-1] = new Production{
+                    FullName = $"Production {i}",
+                    ShortName = $"P{i}"
+                };
+            }
+            ViewBag.Productions = Productions;
             return View();
         }
 
-        //public ActionResult Search(string user, string password){
-        //    try{
-        //        System.Net.ServicePointManager.Expect100Continue = false;
-
-        //        CheckUser.LdapAuth chk = new CheckUser.LdapAuth();
-        //        bool result = chk.checkLogin(user, password);
-        //        return Json(result, JsonRequestBehavior.AllowGet);
-        //    }
-        //    catch (Exception err){
-        //        return View();
-        //    }
-
-        //}
-        [HttpPost]
-        public ActionResult GetLine(string Production){
-            var result = M_Home.GetLine(Production);
-            return Json(result, JsonRequestBehavior.AllowGet);
-        }
-        public ActionResult GetSearch(string Type,int Status,string StartDate,string EndDate,string ProductType,int Overstatus,string Changeitem,string ControlNo, string Model,string Chosechangeitem,string Partno,string Partname,string Department,string Processname ,string Production ,string Line){
-            var temp_search = new SearchAttribute(Type, Status, StartDate, EndDate, ProductType, Overstatus, Changeitem, ControlNo, Model, Chosechangeitem, Partno, Partname, Department, Processname, Production, Line);
-            var TopicList = M_Home.GetSearch(temp_search);
-            TopicList.ForEach(Topic => { 
-                Topic.Date = Topic.Date.StringToDateTimeShort(); 
-                Topic.Timing = Topic.Timing.StringToDateTimeShort();
-                Topic.Detail = Topic.Detail.StripTagsRegex();
-            });
-            
-            return Json(TopicList, JsonRequestBehavior.AllowGet);
-        }
-
-        public List<login> A = new List<login>();
-
-        [HttpPost]
-        public List<String> GetDepartmentList(){
-            return M_Home.GetDepartmentList();
-        }
-
-        [HttpPost]
-        public void GenerateTopicList(string Department, string Position){
-            var dept = Department ?? "Guest";
-            var pos = Position ?? "Guest";
-            bool isApprover = ViewBag.isApprover = (pos == "Approver") || (pos == "Admin") || (pos == "Special") ;
-            var isPEProcess = ViewBag.isPEProcess = (ViewBag.PEAudit.Contains(dept));
-            var isQC = ViewBag.isQC = (ViewBag.QCAudit.Contains(dept));
-            var confirm_dept_list = M_Home.GetConfirmDeptList();
-
-
-            List<TopicNoti> req_list = new List<TopicNoti>();
-            List<TopicNoti> rv_list = new List<TopicNoti>();
-            List<TopicNoti> tr_list = new List<TopicNoti>();
-            List<TopicNoti> cf_list = new List<TopicNoti>();
-
-            if(dept != null){
-                rv_list.AddRange(M_Home.GetReviewPendingByDepartment(dept));
-                if(isApprover){
-                    req_list.AddRange(M_Home.GetRequestIssuedByDepartment(dept));
-                    rv_list.AddRange(M_Home.GetReviewIssuedByDepartment(dept));
+        public ActionResult GetLineByProduction(string Production){
+            try{
+                if(Production.AsNullIfEmpty() != null){
+                    return Json(new { status = "success", data = M_Cal.GetLineByProduction(Production) }, JsonRequestBehavior.AllowGet);
+                }else{
+                    throw new Exception();
                 }
-                if(isPEProcess){
-                    req_list.AddRange(M_Home.GetRequestApprovedByDepartment(dept));
-                }
-                if(isQC){
-                    rv_list.AddRange(M_Home.GetReviewApproved());
-                    tr_list.AddRange(M_Home.GetTrialApproved());
-                    cf_list.AddRange(M_Home.GetConfirmApproved());
-                }
-                if(confirm_dept_list.Contains(dept)){
-                    cf_list.AddRange(M_Home.GetConfirmPendingByDepartment(dept));
-                    if(isApprover){
-                        cf_list.AddRange(M_Home.GetConfirmIssuedByDepartment(dept));
-                    }
-                }
-                if(M_Home.CheckTrialableByDepartment(dept)){
-                    tr_list.AddRange(M_Home.GetTrialPendingByDepartment(dept));
-                    if(isApprover){
-                        tr_list.AddRange(M_Home.GetTrialIssuedByDepartment(dept));
-                    }
-                }
-                ViewData["TopicRequestList"] = req_list;
-                ViewData["TopicReviewList"] = rv_list;
-                ViewData["TopicTrialList"] = tr_list;
-                ViewData["TopicList"] = cf_list;
+            }catch(Exception err){
+                    return Json(new { status = "error" }, JsonRequestBehavior.AllowGet);
             }
         }
+        public List<login> A = new List<login>();
+
     }
 }

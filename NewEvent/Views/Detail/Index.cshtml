@@ -6,78 +6,26 @@
     ViewBag.Title = "New Event System | Detail";
     Layout = "~/Views/Shared/_Layout.cshtml";
 
-    List<FormReviewItem> ReviewItems = ViewData["FormReviewItem"] as List<FormReviewItem>;
-    List<Review> ReviewList = ViewBag.ReviewList as List<Review>;
     List<DepartmentList> DepartmentList = ViewData["DepartmentList"] as List<DepartmentList>;
-    List<Resubmit> ResubmitList = ViewBag.ResubmitList as List<Resubmit>;
-    List<Trial> TrialList = ViewBag.TrialList as List<Trial>;
-    List<Confirm> ConfirmList = ViewBag.ConfirmList as List<Confirm>;
-
-    TopicAlt Topic = ViewData["Topic"] as TopicAlt;
     
     var department = (Session["Department"] != null) ? Session["Department"].ToString() : null;
     var pos = (Session["Position"] != null) ? Session["Position"].ToString() : null;
 
 
-    var isTrialable = (bool) ViewData["isTrialable"];
-
-    bool isApprover = ViewBag.isApprover = (pos == "Approver") || (pos == "Admin") || (pos == "Special") ;
-    var isPEProcess = ViewBag.isPEProcess = (ViewBag.PEAudit.Contains(department));
-    var isQC = ViewBag.isQC = (ViewBag.QCAudit.Contains(department ));
-
-
     string[] status_define = {"-","Approved","Rejected","Waiting","Need more document","Re-submit"," ","Request","Review","Trial & Confirm", "Initial Production", "Finished", "Rejected" };
-    var status = status_define[Topic.Status];
-    Session["Status"] = Topic.Status;
 
-    var Type = Topic.Type;
-    
-    var isReview = (Topic.RelatedListAlt.Exists(Related => Related.Review == 1 && Related.Department == Session["Department"].ToString()));
-    var isRelated = (Topic.RelatedListAlt.Exists(Related => Related.Department == Session["Department"].ToString()));
-    var isTrial = (TrialList.Exists(trial => trial.Department == Session["Department"].ToString()));
-    var isConfirm = (ConfirmList.Exists(confirm => confirm.Department == Session["Department"].ToString()));
-    var isInternal = ViewBag.isInternal = (Type == "Internal");
-    var isExternal = (Type == "External");
-    var Resubmitable = (isQC || isPEProcess) && isRelated && (status != "Waiting" && status != "Finished" && status != "Rejected");
-    var Editable = ((status == "Waiting" || status == "Request") && Session["Department"].ToString() == Topic.Department);
-    var TopicApproveable = (status == "Waiting" && Session["Department"].ToString() == Topic.Department && isApprover);
-
-    var pe_audit = (Topic.RelatedListAlt.Find(e => ViewBag.PEAudit.Contains(e.Department) ));
-
-    var QcReviewable = ViewBag.QcReviewable = (Topic.RelatedListAlt != null) ? (Topic.RelatedListAlt.Exists(e => e.Review == 0 && (ViewBag.QCAudit.Contains(e.Department )) && Topic.RelatedListAlt.Count(d => d.Review == 0) == 1) && !ReviewList.Exists(rv => rv.Status == 3)) : false;
-    var QcTrialable = ViewBag.QcTrialable = (Topic.RelatedListAlt != null) ? (Topic.RelatedListAlt.Exists(e => e.Trial == 2 && (ViewBag.QCAudit.Contains(e.Department )) && !Topic.RelatedListAlt.Exists(d => d.Trial == 0)) && !TrialList.Exists(tr => tr.Status == 3)) : false;
-    var QcConfirmable = ViewBag.QcConfirmable = (Topic.RelatedListAlt != null) ? (Topic.RelatedListAlt.Exists(e => e.Confirm == 0 && (ViewBag.QCAudit.Contains(e.Department ))) && !Topic.RelatedListAlt.Exists(e => e.Confirm == 0 && (ViewBag.cf_list.Contains(e.Department))) && !ConfirmList.Exists(cf => cf.Status == 3)) : false;
+    string[] Messages = {"งานติดขัดปัญหาเยอะมั้ยครับ","ราบลื่นดีครับ ตาม plan"};
 
 }
 
 <script type="text/javascript">
     var DepartmentLists = @Html.Raw(Json.Encode(DepartmentList));
-    var topic_status = '@Session["Status"].ToString()';
-    var topic_id = '@Topic.ID';
-    var topic_code = '@Topic.Code';
-    var pe_audit = '@(pe_audit != null ? pe_audit.Department : null)';
-    var isQC = '@isQC' == 'true' ? true : false;
-    var isTrialable = '@isTrialable' == 'true' ? true : false;
-    var isInternal = '@isInternal';
-    var isExternal = '@isExternal';
-    var isReview = '@isReview'.toLowerCase() == 'true' ? true : false;
     var GenerateMailPath = '@Url.Action("GenerateMail", "Mail")';
-    var ApproveTopicPath = '@Url.Action("ApproveTopic", "Detail")';
-    var CheckAllReviewBeforeApprovePath = '@Url.Action("CheckAllReviewBeforeApprove", "Detail")';
-    var CheckAllTrialBeforeApprovePath = '@Url.Action("CheckAllTrialBeforeApprove", "Detail")';
-    var CheckAllConfirmBeforeApprovePath = '@Url.Action("CheckAllConfirmBeforeApprove", "Detail")';
-    var RejectTopicPath = '@Url.Action("RejectTopic", "Detail")';
-    var UpdateTopicRelatedPath = '@Url.Action("UpdateTopicRelated", "Detail")';
 </script>
 
-    @* @Styles.Render("~/Content/css") *@
-@* @Styles.Render("~/bundles/jquery") *@
 @Scripts.Render("~/bundles/jquery")
 @Scripts.Render("~/bundles/sweetalert")
 @Scripts.Render("~/bundles/filepond")
-@Scripts.Render("~/bundles/vue")
-
-@* <link href="~/Plugin/filepond/filepond.css" rel="stylesheet"> *@
 
 <style>
     .card-sticky{
@@ -255,20 +203,17 @@
         text-indent: -9999px;
         text-overflow: initial;
         text-transform: uppercase;
-        width: 56px
-    }
-
-    @@media (min-width: 1264px) {
-        .w-actions__fab {
-            border-radius: 28px;
-            padding: 0 24px 0 52px;
-            text-indent: 0;
-            width: auto
-        }
+        width: 56px;
     }
 
     .w-actions__fab:hover {
-        background-color: #3740ff;
+        border-radius: 28px;
+        padding: 0 24px 0 52px;
+        text-indent: 0;
+        width: 100%;
+        white-space: nowrap;
+        -webkit-transition: width 1s;
+        transition: width 1s;
     }
 
     .w-actions__fab:active {
@@ -277,12 +222,6 @@
         box-shadow: 0 5px 5px -3px rgba(0, 0, 0, 0.2), 0 8px 10px 1px rgba(0, 0, 0, 0.14), 0 3px 14px 2px rgba(0, 0, 0, 0.12)
     }
 
-    .w-actions__fab:hover,
-    .w-actions__fab:focus,
-    .w-actions__fab:active {
-        outline: 0;
-        text-decoration: none
-    }
 
     .w-actions__fab::before {
         background-size: 24px 24px;
@@ -335,16 +274,16 @@
         background-image: url("@Url.Content("~/tmp/docs/assets/plugins/fontawesome-free/svgs/solid/times.svg")");
     }
 
-    .w-actions__fab--subscribe:hover::after {
-        background-color: rgba(55, 64, 255, 0.04)
+    #finish:hover{
+        background-color: var(--green)!important;
     }
-
-    .w-actions__fab--subscribe:focus::after {
-        background-color: rgba(55, 64, 255, 0.12)
+    
+    #problem:hover{
+        background-color: #ff9900 !important;
     }
-
-    .w-actions__fab--subscribe:active::after {
-        background-color: rgba(55, 64, 255, 0.16)
+    
+    #accident:hover{
+        background-color: var(--red)!important;
     }
 
     body { padding-right: 0 !important }
@@ -355,38 +294,8 @@
 
 <!-- Summernote -->
 <script src="~/tmp/plugins/summernote/summernote-bs4.min.js"></script>
-<script type="text/javascript">
-    var ApproveConfirmPath = '@Url.Action("ApproveConfirm", "Detail")';
-    var UpdateConfirmPath = '@Url.Action("UpdateConfirm", "Detail")';
-    var ApproveReviewPath = '@Url.Action("ApproveReview", "Detail")';
-    var UpdateReviewPath = '@Url.Action("UpdateReview", "Detail")';
-    var ApproveTrialPath = '@Url.Action("ApproveTrial", "Detail")';
-    var UpdateTrialPath = '@Url.Action("UpdateTrial", "Detail")';
-
-    var InsertRelatedPath = '@Url.Action("InsertRelated", "Detail")';
-    var RequestResubmitPath = '@Url.Action("RequestResubmit", "Detail")';
-    var InsertResponsePath = '@Url.Action("InsertResponse", "Detail")';
-    var InsertFileResponsePath = '@Url.Action("InsertFileResponse", "Detail")';
-
-    var InsertReviewPath = '@Url.Action("InsertReview", "Detail")';
-    var InsertReviewItemPath = '@Url.Action("InsertReviewItem", "Detail")';
-    var InsertFilePath = '@Url.Action("InsertFile", "Detail")';
-    var InsertTrialPath = '@Url.Action("InsertTrial", "Detail")';
-    var InsertFileTrialPath = '@Url.Action("InsertFileTrial", "Detail")';
-    var InsertConfirmPath = '@Url.Action("InsertConfirm", "Detail")';
-    var InsertFileConfirmPath = '@Url.Action("InsertFileConfirm", "Detail")';
-    
-    var CheckApproveIPPPath = '@Url.Action("CheckApproveIPP", "Detail")';
-    
-    var UpdateTopicStatusPath = '@Url.Action("UpdateTopicStatus", "Detail")';
-</script>
-
-
-
+<script src="~/Plugin/drift-main/dist/Drift.min.js"></script>
 <script src="~/Scripts/Detail/Detail.js?domain='nv',date='@DateTime.Now.ToString("yyMMddHH")'"></script>
-<script src="~/Scripts/Detail/ReviewList.js?date='@DateTime.Now.ToString("yyMMddHH")'"></script>
-<script src="~/Scripts/Detail/TrialList.js?date='@DateTime.Now.ToString("yyMMddHH")'"></script>
-<script src="~/Scripts/Detail/ConfirmList.js?date='@DateTime.Now.ToString("yyMMddHH")'"></script>
 
 <script src="~/Plugin/filepond/filepond.min.js"></script>
 <script src="~/Plugin/filepond/filepond.jquery.js"></script>
@@ -423,9 +332,6 @@
                 <div class="row">
                             @Html.Partial("Fab",DepartmentList)
 
-                        @* @if(((isPEProcess && isInternal) || (isQC && isExternal)) && isApprover){  *@
-                            @Html.Partial("Related",DepartmentList)
-                        @* } *@
                 </div>
                 <div class="row">
                     <div class="w-actions">
@@ -434,7 +340,7 @@
                                <span>Edit</span>
                             </a>
                         } *@
-                            <a class="w-actions__fab w-actions__fab--finish bg-success" id="tp_approve">
+                            <a class="w-actions__fab w-actions__fab--finish bg-success" id="finish">
                                <span>Run Event Finish</span>
                             </a>
                             <a class="w-actions__fab w-actions__fab--problem bg-warning" id="problem" data-toggle="modal" data-target="#problem_modal">
@@ -449,15 +355,14 @@
             <div class="row mb-2">
                 <div class="col-sm-8">
                     <h1>
-                        TNS Control No. @Html.DisplayFor(model => Topic.Code) 
-                        <span class="badge badge-primary">Rev @Topic.Revision.ToString("00")</span>
-                        @if(Editable) { 
-                        <a href='@Url.Action("Index", "Request",new {id = Topic.Code})' style="font-size: 1.8rem!important;">
-                            <span class="badge badge-warning"><i class="fas fa-pencil-alt" style="font-size: 1rem!important;"></i> Edit</span></a> 
-                        }
+                        M3 29-07-2020
+                        <span class="badge badge-primary">Rev 00</span>
+                        <a style="font-size: 1.8rem!important;">
+                            <span class="badge badge-warning"><i class="fas fa-pencil-alt" style="font-size: 1rem!important;"></i> Edit</span>
+                        </a> 
                     </h1>
 
-                    @{
+                    @* @{
                         var rv_badge = "secondary";
                         var rv_icon = "fa-lock";
 
@@ -490,9 +395,9 @@
                             rv_badge = tr_badge = cf_badge = "primary";
                             rv_icon = tr_icon = cf_icon =  "fa-check";
                         }
-                    }
+                    } *@
 
-                    @if(isRelated){
+                    @* @if(isRelated){
                         <span class='badge badge-pill badge-@rv_badge'>Review
                         <i class='fas @rv_icon'></i>
                         </span>
@@ -508,7 +413,7 @@
                         <span class='badge badge-pill badge-@cf_badge'>Initial Production
                         <i class='fas @cf_icon'></i>
                         </span>
-                    }
+                    } *@
                     
                 </div>
                 <div class="col-sm-4">
@@ -522,45 +427,9 @@
         <!-- /.container-fluid -->
     </section>
             <div class="row">
-                <div class="col-md-3">
-
-                    <!-- Profile Image -->
-                    <div class="card card-primary card-outline card-sticky">
-                        <div class="card-body box-profile">
-
-                            <div class="card-body">
-                                <strong> Change NO.</strong>
-                                <p class="text-muted">@Html.DisplayFor(model => Topic.Code) </p>
-                                <hr>
-                                <strong> Change Items</strong>
-                                <p class="text-muted">@Html.DisplayFor(model => Topic.Change_item) </p>
-                                <hr>
-                                <strong> Product Type</strong>
-                                <p class="text-muted"> @Html.DisplayFor(model => Topic.Product_type) </p>
-                                <hr>
-                                <strong> Model :</strong>
-                                <p class="text-muted"> @Html.DisplayFor(model => Topic.Model) </p>
-                                <hr>
-                                <strong> Process Name :</strong>
-                                <p class="text-muted"> @Html.DisplayFor(model => Topic.ProcessName) </p>
-                                <hr>
-                                <strong> Part No / Part Name :</strong>
-                                <p class="text-muted"> @Html.DisplayFor(model => Topic.PartNo) / @Html.DisplayFor(model => Topic.PartName) </p>
-                                <hr>
-                                @* <strong> Part Name :</strong>
-                                <p class="text-muted"> @Html.DisplayFor(model => Topic.PartName) </p>
-                                <hr> *@
-                                <a href="#" class="btn @(status != "Rejected"? "btn-primary" :"btn-danger") btn-block"><b>Phase : @(status == "Waiting" ? "Request" : status)</b></a>
-                            </div>
-                            <!-- /.card-body -->
-                        </div>
-                        <!-- /.card -->
-                    </div>
-                    <!-- /.card -->
-                </div>
                 <!-- /.col -->
-                <div class="col-md-9">
-                    <div class="card">
+                <div class="col-md-12">
+                    <div class="card card-primary card-outline">
                         <!-- /.card-header -->
                         <div class="card-body">
                             <div class="tab-content">
@@ -568,12 +437,13 @@
                                     <!-- /.mailbox-controls -->
                                     <div class="mailbox-read-message">
                                     <form class="form-horizontal">
-                                    @if(ViewBag.RejectMessage != null){
+
+                                    @* @if(ViewBag.RejectMessage != null){
                                         var rj_msg = ViewBag.RejectMessage;
                                         <h4 class="text-danger">Rejected By</h4>
                                             @:&nbsp; <i class="fas fa-angle-right text-danger"></i>&nbsp; <span class="text-danger"> @rj_msg.Department - @rj_msg.Profile.FullName (@rj_msg.Date) : @rj_msg.Description</span> 
-                                    }
-                                        <h4 class="@(@ViewBag.RejectMessage != null ? "mt-3":"")">Author</h4>
+                                    } *@
+                                        @* <h4 class="@(@ViewBag.RejectMessage != null ? "mt-3":"")">Author</h4>
                                             &nbsp; <i class="fas fa-angle-right text-primary"></i>&nbsp; <span> @Topic.Department -  @Topic.Profile.FullName (@Topic.Time_insert)</span>
                                     @if(status != "Waiting" && Topic.ApprovedBy != null){
                                         <h4 class="mt-3">Approved By</h4>
@@ -584,155 +454,183 @@
                                                    window.location.reload();
                                                 </script>
                                             }
-                                    }
-                                        <h4 class="mt-3">Subject/Purpose for change</h4>
-                                            &nbsp; <i class="fas fa-angle-right text-primary"></i>&nbsp; <span>@Html.Raw(HttpUtility.HtmlDecode(Topic.Subject.ReplaceNullWithDash().TrimStart()))</span>
-                                        <h4 class="mt-3">Change Details</h4>
-                                            &nbsp; <i class="fas fa-angle-right text-primary"></i>&nbsp; <span>@Html.Raw(HttpUtility.HtmlDecode(Topic.Detail.ReplaceNullWithDash().TrimStart()))</span>
-                                        <h4 class="mt-3">Change Date</h4>
-                                            &nbsp; <i class="fas fa-angle-right text-primary"></i>&nbsp; <span>@Html.Raw(HttpUtility.HtmlDecode(Topic.Timing.ReplaceNullWithDash().TrimStart()))</span> 
-                                        @if(Topic.TimingDesc != null) {<span>@Html.Raw(HttpUtility.HtmlDecode(Topic.TimingDesc.TrimStart()))</span>}
-                                        <h4 class="mt-3">Related Department</h4>
-                                            &nbsp; <i class="fas fa-angle-right text-primary"></i>&nbsp; <span>
-                                            @{
-                                                var j=0;
-                                                foreach (var Related in Topic.RelatedListAlt){
-                                                    var isResponsed = (Related.Review == 1) ? true : false;
-                                                    @(j>0?" , ":"")@Related.Department
-                                                    j++;
-                                                }
-                                            }
-                                            </span>
+                                    } *@
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <h4 class="mt-3">Product Type</h4>
+                                            &nbsp; <i class="fas fa-angle-right text-primary"></i>&nbsp; <span>Meter 2R</span>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <h4 class="mt-3">Line</h4>
+                                            &nbsp; <i class="fas fa-angle-right text-primary"></i>&nbsp; <span>M3</span>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <h4 class="mt-3">Model</h4>
+                                            &nbsp; <i class="fas fa-angle-right text-primary"></i>&nbsp; <span>K1TA base KZZJ</span>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <h4 class="mt-3">Event</h4>
+                                            &nbsp; <i class="fas fa-angle-right text-primary"></i>&nbsp; <span>Japan & A-MO</span>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <h4 class="mt-3">Plan</h4>
+                                            &nbsp; <i class="fas fa-angle-right text-primary"></i>&nbsp; <span>3</span>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <h4 class="mt-3">Part NO</h4>
+                                            &nbsp; <i class="fas fa-angle-right text-primary"></i>&nbsp; <span>-</span>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <h4 class="mt-3">Event Date</h4>
+                                            &nbsp; <i class="fas fa-angle-right text-primary"></i>&nbsp; <span>18-09-2020</span>
+                                        </div>
+                                    </div>
                                     </form>
-
-
                                 @try{
-                                    if(Topic.FileList.Count != 0){
+                                    @* if(Topic.FileList.Count != 0){
                                         <h4 class="mt-3">Attach File</h4>
                                         <div class="card-footer bg-white">
                                         @Html.Partial("~/Views/Helper/FileList.cshtml",Topic.FileList as List<FileItem>)
                                         </div>
-                                    }   
+                                    }    *@
                                 }catch(Exception err){
                                     <script>
                                         window.location.reload();
                                     </script>
                                 }
+                                <div class="card card-primary card-outline mt-4 p-4">
+                                <table id="detail_event_table" class="table table-bordered table-hover txtcenter" width="100%">
+                                    <thead>
+                                        <tr>
+                                            <th width="27%">Model No.</th>
+                                            <th width="15%">Event</th>
+                                            <th width="7%">Q'ty</th>
+                                            <th width="8%">FG</th>
+                                            <th width="10%">NG Q'ty</th>
+                                            <th width="10%">%NG</th>
+                                            <th width="40%">Defect Detail</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <form id="detail_event_form" action="javascript:void(0);">
+                                        @foreach(var EventDetail in ViewBag.EventDetails){
+                                            <tr>
+                                                <td><input name="dt_model" class="form-control" value="@EventDetail.Model"></input></td>
+                                                <td><input name="dt_event" class="form-control" value="@EventDetail.Event"></input></td>
+                                                <td><input name="dt_qty" type="number" class="form-control" min="0" value="@EventDetail.Qty"></input></td>
+                                                <td><input name="dt_fg" type="number" class="form-control" min="0" value="0" max="@EventDetail.Qty" oninput="checkMax(this)" required></input></td>
+                                                <td><input name="dt_ng_qty" type="number" class="form-control" min="0" value="0" max="@EventDetail.Qty" oninput="checkMax(this)" required></input></td>
+                                                <td><input name="dt_percent_ng" class="form-control" value="0%" disabled></input></td>
+                                                <td><textarea name="dt_defect" class="form-control" rows="1" required></textarea></td>
+                                            </tr>
+                                        }
+                                        </form>
+                                    </tbody>
+                                </table>
+                                <div class="row mt-3">
+                                    <div class="col-10 row">
+                                        <div id="for_datepicker" style="top: 368px; !important"></div>
+                                        <label class="col-sm-2 col-form-label">Finish Time</label>
+                                        <div class="col-sm-8">
+                                            <div class="input-group">
+                                                <div class="input-group-prepend">
+                                                <span class="input-group-text"><i class="far fa-calendar-alt"></i></span>
+                                                </div>
+                                                    <input data-toggle="datepicker" class="form-control required" placeholder="Select Date " autocomplete="off" name="timing" data-inputmask-alias="datetime" data-inputmask-inputformat="dd-MM-yyyy" data-mask="99-99-9999" style="border-radius: 0px 5px 5px 0px; !important" required>
+                                                    <div data-toggle="datepicker"></div>
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-2"></div>
                                     </div>
+                                    <div class="col-2">
+                                        <input type="submit" class="btn btn-block btn-primary btn-block" value="Update" disabled>
+                                    </div>
+                                </div>
+                                </div>
+
+
+                                </div>
                                     <!------------------------------------QUALITY CONTROL---------------------------------------------------------->
-                                @if(isExternal || ReviewList.Count != 0){
-                                    @* <hr> *@
+                                    
                                     <div class="mt-3 ml-n3 mr-n3">
                                         <div class="card-header p-2">
-                                        <ul class="nav nav-pills">
-                                            <li class="nav-item"><a class="nav-link tab-nav mr-2 active" id="custom-tabs-four-home-tab" data-toggle="pill" href="#custom-tabs-four-home" role="tab">Detail</a></li>
-                                            <li class="nav-item"><a class="nav-link tab-nav mr-2" id="custom-tabs-four-profile-tab" data-toggle="pill" href="#custom-tabs-four-profile" role="tab">Detail</a></li>
+                                        <ul class="nav nav-pills ml-2">
+                                            <li class="nav-item"><a class="nav-link tab-nav mr-2 active" id="custom-tabs-four-home-tab" data-toggle="pill" href="#custom-tabs-four-home" role="tab">Problem 1</a></li>
+                                            <li class="nav-item"><a class="nav-link tab-nav mr-2" id="custom-tabs-four-profile-tab" data-toggle="pill" href="#custom-tabs-four-profile" role="tab">Problem 2</a></li>
                                         </ul>
                                         </div>
                                         <div class="card-body">
                                             <div class="tab-content" id="custom-tabs-four-tabContent">
                                                 <div class="tab-pane fade active show" id="custom-tabs-four-home" role="tabpanel" aria-labelledby="custom-tabs-four-home-tab">
-                                                        @* <h1>Quality Control</h1> *@
-                                                            <!-- The timeline -->
+                                                    <!-- The timeline -->
+                                                    <div class="row">
+                                                        <div class="col-sm-6 pr-0">
                                                             <div class="timeline timeline-inverse">
-
                                         @* /* ------------------------------- Review List ------------------------------ */ *@
                                                                 <div class="time-label">
                                                                     <span class="bg-primary">
                                                                         PROBLEM DETAIL <br> 
-                                                                        @* <span class="time"><i class="far fa-clock"></i> 12:05</span> *@
                                                                     </span>
                                                                 </div>
-                                                                    @Html.Partial("Review/List",ReviewList) 
+                                                                    @Html.Partial("Problem/Parent") 
+                                                                    @Html.Partial("Problem/Children") 
+                                                                    @ReplyBox()
+                                                                    
 
-
-                                                                @if(Topic.Status == 11 || Topic.Status == 12){
+                                                                @* @if(Topic.Status == 11 || Topic.Status == 12){
                                                                 <div class="time-label">
                                                                     <span class="bg-primary">
                                                                         Closed 
-                                                                        @* <br><span class="time"><i class="far fa-clock"></i> 2 days ago</span> *@
                                                                     </span>
                                                                 </div>
-                                                                }
+                                                                } *@
                                                                 <div>
                                                                     <i class="far fa-clock bg-gray"></i>
                                                                 </div>
                                                             </div>
+                                                        </div>
+                                                        <div class="col-sm-6">
+                                                            <div class="timeline timeline-inverse">
+                                        @* /* ------------------------------- Review List ------------------------------ */ *@
+                                                                <div class="time-label">
+                                                                    <span class="bg-primary">
+                                                                        DISCUSSION <br> 
+                                                                    </span>
+                                                                </div>
+
+                                                                @foreach(var Message in Messages){
+                                                                    @Html.Partial("Discussion/Children", Message) 
+                                                                }
+
+                                                                @ReplyBox()
+
+                                                                @* @if(Topic.Status == 11 || Topic.Status == 12){
+                                                                <div class="time-label">
+                                                                    <span class="bg-primary">
+                                                                        Closed 
+                                                                    </span>
+                                                                </div>
+                                                                } *@
+                                                                <div>
+                                                                    <i class="far fa-clock bg-gray"></i>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
                                                 </div>
                                                 <div class="tab-pane fade" id="custom-tabs-four-profile" role="tabpanel" aria-labelledby="custom-tabs-four-profile-tab">
                                                     Mauris tincidunt mi at erat gravida, eget tristique urna bibendum. Mauris pharetra purus ut ligula tempor, et vulputate metus facilisis. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Maecenas sollicitudin, nisi a luctus interdum, nisl ligula placerat mi, quis posuere purus ligula eu lectus. Donec nunc tellus, elementum sit amet ultricies at, posuere nec nunc. Nunc euismod pellentesque diam. 
                                                 </div>
-                                            </div>
-                                        </div>
                                         <!-- /.card -->
                                     </div>
-                                    
-                                }
-
-                                @* /* ----------------------------- Review section ----------------------------- */ *@
-                                @if(isRelated && !isReview && (Topic.Status == 7 || Topic.Status == 8)){
-                                    @* if(isPEProcess && (Topic.Status == 7 || Topic.Status == 8)){
-                                        Session["isIssued"] = true;
-                                        @Html.Partial("Review/PE_Process") 
-                                    }else if(isQC && QcReviewable && (Topic.Status == 8)){
-                                        @Html.Partial("Review/QC")
-                                    }else if(((!isQC && !isPEProcess && Topic.Status == 8 && isInternal) || (isExternal && !isQC))){
-                                        @Html.Partial("Review/Other", ReviewItems) 
-                                    } *@
-
-                                }else if((isTrialable || (QcTrialable && isQC)) && !isTrial && Topic.Status == 9){
-                                @* /* ----------------------------- Trial section ----------------------------- */ *@
-                                    @* <hr><br>
-                                    <h1>Trial & Confirm</h1><br>
-                                    <form class="form-horizontal"  action="javascript:void(0);" id="Trial">
-                                    <div class="form-group row">
-                                        <label class="col-sm-2 col-form-label"> Description: </label>
-                                        <div class="col-sm-10 col-form-label">
-                                            <textarea class="form-control" name="tr_desc" style="height:20vh"></textarea>
-                                        </div>
-                                    </div>
-                                    <div class="form-group row">
-                                        <label class="col-sm-2 col-form-label"> Attach File: </label>
-                                        <div class="col-sm-10">
-                                            <input type="file" class="my-pond" name="filepond"/>
-                                        </div>
-                                    </div>
-                                    <hr><br>
-                                        <div class="form-group row">
-                                            <div class="col-sm-12">
-                                                <button type="submit" id="tr_submit" class="btn btn-info float-right" disabled>Submit</button>
-                                            </div>
-                                        </div>
-                                    </form>                                     *@
-                                }
-                                    @{
-                                        var temp_dept = Session["Department"].ToString();
-                                        if(Topic.Status == 7 || Topic.Status == 8){
-                                            Review rv_edit = ReviewList.Find(Review => Review.Department == temp_dept);
-                                            if(rv_edit != null) { 
-                                                if(isQC){
-                                                    @Html.Partial("Review/Edit_QC",rv_edit) 
-                                                }else if(isPEProcess){
-                                                    @Html.Partial("Review/Edit_PE_Process",rv_edit) 
-                                                }else{
-                                                    @Html.Partial("Review/Edit",rv_edit) 
-                                                }
-                                            }
-                                        }else if(Topic.Status == 9){
-                                            Trial tr_edit = TrialList.Find(Trial => Trial.Department == Session["Department"].ToString());
-                                            if(tr_edit != null) { @Html.Partial("Trial/Edit",tr_edit) }
-                                        }else if(Topic.Status == 10){
-                                            Confirm cf_edit = ConfirmList.Find(Confirm => Confirm.Department == Session["Department"].ToString());
-                                            if(cf_edit != null) { @Html.Partial("Confirm/Edit",cf_edit) } 
-                                        }
-                                    }
-
                                 </div> @* End of tab-pane *@
                                 <!-- /.tab-pane -->
-                                <div class ="tab-pane" id="timeline">
-                                    <!-- The timeline -->
-                                        @Html.Partial("Resubmit",ResubmitList) 
-                                </div>
                                 <!-- /.tab-pane -->
                                 
                                 <!-- /.tab-pane -->
@@ -753,3 +651,16 @@
 </div>
 <!-- /.content-wrapper -->
 
+@helper ReplyBox(){
+    <div class="mr-0">
+    <i class="fas fa-pen bg-warning"></i>
+        <div class="timeline-item mr-0" id="my-card">
+            <div class="timeline-body reply_modal d-flex" style="padding: 10px 10px 5px 10px;cursor:pointer;" data-toggle="modal" data-target="#reply_modal">
+                <h6 class="ml-auto mr-auto" style="font-family:Kanit"> 
+                    <i class="fas fa-reply"></i>
+                    &nbsp;Reply
+                </h6> 
+            </div>
+        </div>
+    </div>
+}

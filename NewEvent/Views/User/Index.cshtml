@@ -1,0 +1,251 @@
+﻿@{
+    //ViewBag.Title = "Home Page";
+    ViewBag.Title = "Change Control System | User";
+}
+@Scripts.Render("~/bundles/jquery")
+@Scripts.Render("~/bundles/sweetalert")
+
+<script type="text/javascript">
+    var us_dept = '@Session["Department"].ToString()';
+    var us_pos = '@Session["Position"].ToString()';
+    var AddUserPath = '@Url.Action("AddUser", "User")';
+    var AddPermissionPath = '@Url.Action("AddPermission", "User")';
+    var GetUserCodeByDeptPath = '@Url.Action("GetUserCodeByDept", "User")';
+    var GetUserWithPermissionByDeptPath = '@Url.Action("GetUserWithPermissionByDept", "User")';
+    var UpdatePositionPath = '@Url.Action("UpdatePosition", "User")';
+    var UpdateSubscribePath = '@Url.Action("UpdateSubscribe", "User")';
+    var DeletePermissionPath = '@Url.Action("DeletePermission", "User")';
+    var DeleteUserPath = '@Url.Action("DeleteUser", "User")';
+    var Positions = @Html.Raw(Json.Encode(ViewBag.Positions));
+</script>
+
+<script>
+    $(document).ready(function () {
+        $("#menu1-1").removeClass('active');
+        $('#menu2-1').removeClass('active');
+        $('#menu3-1').removeClass('active');
+        $('#menu4-1').addClass('active');
+        $("[name='dept']").val(us_dept, true)
+    });
+
+</script>
+<!-- DataTables -->
+<script src="~/Scripts/User/User.js"></script>
+
+<div class="content-wrapper">
+    <section class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1>User/Permission Management</h1>
+                </div>
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item"><a href="#">Change Control System</a></li>
+                        <li class="breadcrumb-item active">User</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+        <!-- /.container-fluid -->
+    </section>
+    <!-- Main content -->
+    <section class="content">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-6">
+                    <!-- jquery validation -->
+                    <div class="card card-primary">
+                        <div class="card-header">
+                            <h3 class="card-title"><i class="fas fa-user-plus"></i> Add User </h3>
+                        </div>
+
+                        <form action="javascript:void(0);" id="User">
+                            <div class="card-body">
+                                <div class="row">
+                                    <!-- left column -->
+                                    <div class="col-md-12">
+                                        <!-- select2 -->
+
+                                        <div class="form-group">
+                                            <div class="row">
+                                                <div class="col-md-4">
+                                                    <div class="form-group mb-0">
+                                                        <label>ID :</label>
+                                                        <input type="text" maxlength="5" class="form-control" name="user" placeholder="Enter ...">
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-8">
+                                                    <div class="form-group mb-0">
+                                                        <label>Name :</label>
+                                                        <input type="text" class="form-control" name="name" placeholder="Enter ...">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <div class="row">
+                                                <div class="col-md-4">
+                                                    <div class="form-group mb-0">
+                                                        <label>Position :</label>
+                                                        <select class="form-control select2" name="position" style="width: 100%;">
+                                                            <option disabled="disabled">Select Position</option>
+                                                            @{
+                                                                var i = 0;
+                                                                foreach(var position in ViewBag.Positions){
+                                                                    <option value="@i" @(i == 0 ? "selected":"")>@position</option>
+                                                                        i++;
+                                                                }
+                                                            }
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-8">
+                                                    <div class="form-group mb-0">
+                                                        <label>E-Mail :</label>
+                                                        <input type="text" class="form-control" name="email" placeholder="Enter ...">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                    </div>
+
+                                </div>
+                            </div>
+                            <!-- /.card-body -->
+                        </form>
+                        
+                        <div class="card-footer">
+                            <button class="btn btn-default" type="button" id="clear_btn" form="User">Clear</button>
+                            <button id="user_submit" type="submit" class="btn btn-info float-right" form="User">
+                                @* <i class="fa fa-pen"></i>&nbsp;&nbsp; *@
+                                Submit
+                            </button>
+                        </div>
+
+                    </div>
+                    <!-- /.card -->
+                </div>
+                <div class="col-md-6">
+                    <!-- jquery validation -->
+                    <div class="card card-primary">
+                        <div class="card-header">
+                            <h3 class="card-title"><i class="fas fa-user-cog"></i> Add Permission </h3>
+                        </div>
+
+                        <form action="javascript:void(0);" id="Permission">
+                            <div class="card-body">
+                                <div class="row">
+                                    <!-- left column -->
+                                    <div class="col-md-12">
+                                        <!-- select2 -->
+
+                                        <div class="form-group">
+                                            <div class="row">
+                                                <div class="col-md-3">
+                                                    <div class="form-group mb-0">
+                                                        <label>ID :</label>
+                                                        <select class="form-control select2" name="user" style="width: 100%;">
+                                                            <option disabled="disabled">Select Position</option>
+                                                            @foreach(var user in ViewBag.Users){
+                                                                <option value="@user" @(Session["User"].ToString() == user ? "selected" : "")>@user</option>
+                                                            }
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-9">
+                                                    <div class="form-group mb-0">
+                                                        <label>Department :</label>
+                                                        <select class="form-control select2" name="dept" style="width: 100%;">
+                                                            <option disabled="disabled">Select Position</option>
+                                                            @foreach(var dept in ViewBag.Depts){
+                                                                <option value="@dept" @(Session["Department"].ToString() == dept ? "selected" : "")>@dept</option>
+                                                            }
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <div class="form-group mb-0">
+                                                        <label>Receive email :</label>
+                                                        <select class="form-control select2" name="receive_mail" style="width: 100%;">
+                                                            <option value="1" selected="selected">Yes</option>
+                                                            <option value="0">No</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                    </div>
+
+                                </div>
+                            </div>
+                            <!-- /.card-body -->
+                        </form>
+
+                        <div class="card-footer">
+                            @* <button type="submit" class="btn btn-default" id="clear_btn">Clear</button> *@
+                            <button id="user" type="submit" value="search" class="btn btn-info float-right" form="Permission">
+                                @* <i class="fa fa-pen"></i>&nbsp;&nbsp; *@
+                                Submit
+                            </button>
+                        </div>
+                    </div>
+                    <!-- /.card -->
+                </div>
+            </div>
+            <!-- /.row -->
+        </div>
+        <!-- /.container-fluid -->
+    </section>
+
+
+    <!-- /.content -->
+    <!-- Main content -->
+    <section class="content">
+        <div class="container-fluid">
+            <div class="row">
+                <!-- left column -->
+                <div class="col-md-12">
+                    <!-- jquery validation -->
+                    <div class="card card-primary">
+                        <div class="card-header">
+                            <h3 class="card-title">Total records <small>....</small></h3>
+                        </div>
+                        <!-- /.card-header -->
+
+                        <div class="card-body table-responsive">
+                            <table id="user_tb" class="table table-bordered table-hover txtcenter" width="100%">
+                                <thead>
+                                    <tr>
+                                        <th class="center" width="3%"></th>
+                                        <th class="center" width="8%">ID</th>
+                                        <th class="center" width="35%">Name</th>
+                                        <th class="center" width="15%">Position</th>
+                                        <th class="center" width="15%">Dept.</th>
+                                        <th class="center" width="12%">Subscribe</th>
+                                        <th class="center" width="12%">Action</th>
+                                    </tr>
+                                </thead>
+                                @using (Html.BeginForm("GoTo", "Home", FormMethod.Post))
+                                {
+                                    <tbody id="tbody1">
+                                    </tbody>
+                                }
+                            </table>
+                        </div>
+                    </div>
+                    <!-- /.card -->
+                </div>
+                <!-- /.row -->
+            </div>
+        </div>
+        <!-- /.container-fluid -->
+    </section>
+    <!-- /.content -->
+</div>

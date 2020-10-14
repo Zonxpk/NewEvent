@@ -1,6 +1,11 @@
-﻿@{
+﻿@using NewEvent.Models
+
+@{
     //ViewBag.Title = "Home Page";
     ViewBag.Title = "New Event System | Home";
+    List<DepartmentList> DepartmentList = ViewData["DepartmentList"] as List<DepartmentList>;
+    List<ProductType> ProductTypes = ViewData["FormProductType"] as List<ProductType>;
+
 }
 <script type="text/javascript">
     Search = '@Url.Action("Search", "Home")';
@@ -8,21 +13,22 @@
     GetSearch = '@Url.Action("GetSearch", "Home")';
     SessionUser = '@Session["User"].ToString()';
     us_dept = '@Session["Department"].ToString()';
+    GetLineByProductionPath = '@Url.Action("GetLineByProduction","Calendar")';
+    NavigateToDetail = '@Url.Action("Index","Detail")';
 </script>
 
 @Scripts.Render("~/bundles/jquery")
 @Scripts.Render("~/bundles/sweetalert")
+
+<script src="~/Scripts/Calendar/Calendar.js?date='@DateTime.Now.ToString("yyMMddHH")'"></script>
+<script src="~/tmp/plugins/summernote/summernote-bs4.min.js"></script>
 <script>
     $(document).ready(function () {
         $("#menu1-1").addClass('active');
         $('#menu2-1').removeClass('active');
         $('#menu3-1').removeClass('active');
-        $("[name='dept']").val(us_dept,true)
     });
-
 </script>
-
-<script src="~/Scripts/Calendar/Calendar.js"></script>
 
 <style>
 
@@ -55,8 +61,20 @@
         border-radius: 0px 5px 5px 0px;
     }
 
+    .main-sidebar , .main-header{
+        z-index: 20 !important;
+    }
+
     .fc-daygrid-body, .fc-scrollgrid-sync-table, .fc-col-header {
         width: 100% !important;
+    }
+    
+    .btn-group span {
+        font-family: 'Font Awesome 5 Free' !important;
+    }
+    
+    ngb-popover-window {
+        will-change: unset !important;
     }
 </style>
 <!-- Content Wrapper. Contains page content -->
@@ -72,7 +90,7 @@
         <div class="container-fluid">
             <div class="row mb-2">
                 <div class="col-sm-6">
-                    <h1>Main Menu</h1>
+                    <h1>Calendar</h1>
                 </div>
                 <div class="col-sm-6">
                     <ol class="breadcrumb float-sm-right">
@@ -84,35 +102,25 @@
         </div>
         <!-- /.container-fluid -->
     </section>
+
+
     <!-- Main content -->
     <section class="content">
         <div class="container-fluid">
             <div class="row">
-                <!-- left column -->
-                <div class="col-md-12">
-                    <!-- jquery validation -->
-                    <div class="card card-primary">
-                        <div class="card-header">
-                            <h3 class="card-title">Search </h3>
-                        </div>
-
-                        <div class="card-body">
-                            <div class="row">
-                                <div class="col-md-2"></div>
-                                <div id='calendar' class="col-md-12"></div>
-                            </div>
-                        </div>
-                        <!-- /.card-body -->
-                    </div>
-                    <!-- /.card -->
-                </div>
-                <!--/.col (left) -->
-                <!-- right column -->
-                <!--/.col (right) -->
+                @Html.Partial("NewEvent",ProductTypes)
             </div>
-            <!-- /.row -->
+            
+            <div class="card card-primary card-outline">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-2"></div>
+                        <div id='calendar' class="col-md-12"></div>
+                    </div>
+                </div>
+            </div>
         </div>
-        <!-- /.container-fluid -->
     </section>
-    <!-- /.content -->
 </div>
+
+

@@ -55,16 +55,16 @@ $(document).ready(function () {
                                     let selected_dept = $(".select-custom").children("option:selected").text();
                                     $.post(SetDepartmentAltPath,{dept:selected_dept},(success) => {
                                         if(success){
-                                            swal("Success", "Sign in complete", "success").then( window.location.href = (UrlTopicID.length > 8 ) ? NavigateToPrevious : NavigateToHome );
+                                            swal("Success", "Sign in complete", "success").then( window.location.href = (UrlTopicID.length > 8 ) ? NavigateToPrevious : NavigateToCalendar );
                                         }
                                     });
                                 });
                             }else{
-                                swal("Success", "Sign in complete", "success").then( window.location.href = (UrlTopicID.length > 8 ) ? NavigateToPrevious : NavigateToHome );
+                                swal("Success", "Sign in complete", "success").then( window.location.href = (UrlTopicID.length > 8 ) ? NavigateToPrevious : NavigateToCalendar );
                             }
                         });
                     }else if(res.status == "success"){
-                        swal("Success", "Sign in complete", "success").then( window.location.href = (UrlTopicID.length > 8 ) ? NavigateToPrevious : NavigateToHome );
+                        swal("Success", "Sign in complete", "success").then( window.location.href = (UrlTopicID.length > 8 ) ? NavigateToPrevious : NavigateToCalendar );
                     }else if(res.status == "guest"){
                         // var departments = GetDepartmentList(Iuser);
                         // var select = CreateDepartmentOption(res.data,departments)
@@ -83,11 +83,11 @@ $(document).ready(function () {
                         //     let selected_dept = $(".select-custom").children("option:selected").text();
                         //     $.post(SetDepartmentAltPath,{dept:selected_dept},(success) => {
                         //         if(success){
-                        //                 swal("Success", "Sign in complete", "success").then( window.location.href = (UrlTopicID.length > 8 ) ? NavigateToPrevious : NavigateToHome );
+                        //                 swal("Success", "Sign in complete", "success").then( window.location.href = (UrlTopicID.length > 8 ) ? NavigateToPrevious : NavigateToCalendar );
                         //         }
                         //     });
                         // });
-                        swal("Success", "Sign in complete", "success").then( window.location.href = (UrlTopicID.length > 8 ) ? NavigateToPrevious : NavigateToHome );
+                        swal("Success", "Sign in complete", "success").then( window.location.href = (UrlTopicID.length > 8 ) ? NavigateToPrevious : NavigateToCalendar );
 
                     }else{
                         loader.toggle();
