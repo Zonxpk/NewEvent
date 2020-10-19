@@ -8,13 +8,12 @@ using System.Web.Mvc;
 using NewEvent.Helpers;
 
 namespace NewEvent.Controllers{
-    public class HomeController : Controller{
+    public class HomeController : NewEventController{
 
+        private CalendarModel M_Cal;
         private HomeModel M_Home;
-        public class Line{
-            public string line { get; set; }
-        }
         public HomeController(){
+            M_Cal = new CalendarModel();
             M_Home = new HomeModel();
             if(ViewBag.QCAudit == null) ViewBag.QCAudit = M_Home.GetQcAudit();
             if(ViewBag.PEAudit == null) ViewBag.PEAudit = M_Home.GetPEAudit();
@@ -25,6 +24,9 @@ namespace NewEvent.Controllers{
                 Session["url"] = "Home";
                 return RedirectToAction("Index", "Login");
             }
+
+            ViewData["FormProductType"] = M_Cal.GetProductType(); //Get list of product type radio
+            ViewBag.Productions = this.GetProductions();
             return View();
         }
 

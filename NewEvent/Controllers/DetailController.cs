@@ -51,7 +51,15 @@ namespace NewEvent.Controllers{
 
             var DepartmentGroup = M_Detail.GetDepartmentGroup(); //Get raw group of departments
             List<DepartmentList> departmentList = new List<DepartmentList>();
-            
+
+            foreach(string GroupName in DepartmentGroup){
+                List<Department> departments = new List<Department>();
+                departments = M_Detail.GetDepartmentByGroup(GroupName);
+                departmentList.Add(new DepartmentList(){Name = GroupName.Replace(" ", "_"), Department = departments}); //Convert raw group into department list for radio
+            }
+
+            ViewData["DepartmentList"] = departmentList;
+
             var EventDetail = new EventDetail();
             var EventDetails = new EventDetail[2];
             

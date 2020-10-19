@@ -47,7 +47,7 @@ $(() => {
 /* ---------------------------------------------------------------------------------------------- */
 /*                                         Calculate % NG                                         */
 /* ---------------------------------------------------------------------------------------------- */
-    $("#detail_event_table").on("input","tr [name='dt_ng_qty'], tr [name='dt_fg']", function() {
+    $("#detail_event_table").on("input","tr [name='dt_ng_qty'], tr [name='dt_fg'], tr [name='dt_qty']", function() {
         let cells = $(this).closest("tr").children().children();
         let ng_qty = cells.closest("[name='dt_ng_qty']");
         let fg = cells.closest("[name='dt_fg']");

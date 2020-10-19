@@ -8,14 +8,15 @@
     GetSearch = '@Url.Action("GetSearch", "Home")';
     SessionUser = '@Session["User"].ToString()';
     us_dept = '@Session["Department"].ToString()';
+    GetLineByProductionPath = '@Url.Action("GetLineByProduction","Calendar")';
 </script>
 
 @Scripts.Render("~/bundles/jquery")
 @Scripts.Render("~/bundles/sweetalert")
 <script>
     $(document).ready(function () {
-        $("#menu1-1").addClass('active');
-        $('#menu2-1').removeClass('active');
+        $("#menu1-1").removeClass('active');
+        $('#menu2-1').addClass('active');
         $('#menu3-1').removeClass('active');
         $("[name='dept']").val(us_dept,true)
     });
@@ -172,54 +173,8 @@
                                 <div class="col-md-12">
                                     <!-- select2 -->
                                     <div class="form-group">
-                                        <div class="row mb-3">
-                                            <div class="col-md-12">
-                                            <label>Phase :</label> &emsp;
-                                                <label class="setcheckbox">
-                                                    <input type="radio" name="status" value="0" class="flat-red" checked>
-                                                    All status
-                                                </label>
-                                                @* <label class="setcheckbox">
-                                                    <input type="radio" name="status" value="3" class="flat-red">
-                                                    Waiting
-                                                </label> *@
-                                                <label class="setcheckbox">
-                                                    <input type="radio" name="status" value="7" class="flat-red">
-                                                    Request
-                                                </label>
-                                                <label class="setcheckbox">
-                                                    <input type="radio" name="status" value="8" class="flat-red">
-                                                    Review
-                                                </label>
-                                                <label class="setcheckbox">
-                                                    <input type="radio" name="status" value="9" class="flat-red">
-                                                    Trial & Confirm
-                                                </label>
-                                                <label class="setcheckbox">
-                                                    <input type="radio" name="status" value="10" class="flat-red">
-                                                    Initial Production
-                                                </label>
-                                                <label class="setcheckbox">
-                                                    <input type="radio" name="status" value="11" class="flat-red">
-                                                    Finished
-                                                </label>
-                                                <label class="setcheckbox">
-                                                    <input type="radio" name="status" value="12" class="flat-red">
-                                                    Rejected
-                                                </label>
-                                            </div>
-                                        </div>
                                         <div class="row">
-                                            <div class="col-md-2">
-                                                <label>Change Type :</label>
-                                                <select class="form-control select2" id="changeType" style="width: 100%;">
-                                                    <option disabled="disabled" selected="selected">Select Type</option>
-                                                    <option value="">--- Blank ---</option>
-                                                    <option value="Internal">Internal Change</option>
-                                                    <option value="External">External Change</option>
-                                                </select>
-                                            </div>
-                                            <div class="col-md-4">
+                                            <div class="col-md-6">
                                                 <label>Control No. :</label>
                                                 <input type="text" class="form-control" id="TNScontrolNo" placeholder="Enter ...">
                                             </div>
@@ -247,78 +202,35 @@
                                         </div>
 
                                     </div>
-                                    <div class="form-group">
+                                    <div >
                                         <div class="row">
+                                            <div class="col-md-3">
+                                                <div class="form-group">
+                                                    <label>Production</label>
+                                                    <select class="form-control select2" name="prod" style="width: 100%;">
+                                                        <option disabled="disabled" value="default"selected="selected">Select Production</option>
+                                                        @foreach(var prod in ViewBag.Productions){
+                                                            <option value="@prod.ShortName" @(prod.ShortName == Session["Department"].ToString() ? "selected" : "")>@prod.FullName</option>
+                                                        }
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <div class="form-group">
+                                                    <label>Line</label>
+                                                    <select class="form-control select2" name="line" style="width: 100%;">
+                                                        <option disabled value="default" selected>Line</option>
+                                                    </select>
+                                                </div>
+                                            </div>
                                             <div class="col-md-6">
-                                                <label>Related Section :</label>
-                                                <select class="form-control select2" name="dept" style="width: 100%;">
-                                                    <option disabled="disabled" selected="selected">Department</option>
-                                                    <option value="">--- Blank ---</option>
-                                                    @foreach(var dept in ViewBag.Departments){
-                                                        <option>@dept</option>
-                                                    }
-                                                </select>
+                                                <label>Model</label>
+                                                <input type="text" class="form-control" id="TNScontrolNo" placeholder="Enter ...">
                                             </div>
                                             
-
-                                            <div class="col-md-6">
-                                                <label>Over All Status Complete :</label><br>
-                                                <label class="setcheckbox">
-                                                    <input type="radio" name="overstatus" value="1" class="flat-red" checked>
-                                                    All status
-                                                </label>
-                                                <label class="setcheckbox">
-                                                    <input type="radio" name="overstatus" value="2" class="flat-red">
-                                                    Review
-                                                </label>
-                                                <label class="setcheckbox">
-                                                    <input type="radio" name="overstatus" value="3" class="flat-red">
-                                                    Trial & Confirm
-                                                </label>
-                                                <label class="setcheckbox">
-                                                    <input type="radio" name="overstatus" value="4" class="flat-red">
-                                                    Initial Production
-                                                </label>
-                                                
-                                            </div>
                                         </div>
                                     </div>
 
-                                    <div class="form-group">
-                                        <div class="row">
-                                            <div class="col-md-6">
-                                                <label>Change Items :</label>
-                                                <select class="form-control select2" id="changeitem" style="width: 100%;">
-                                                    <option disabled="disabled" selected="selected">Select Item</option>
-                                                    <option value="">--- Blank ---</option>
-                                                    <option value="1">New Part</option>
-                                                    <option value="2">Material change</option>
-                                                    <option value="3">Manufacturing Method change</option>
-                                                    <option value="4">Inspection Method change</option>
-                                                    <option value="5">Jig /Tool change</option>
-                                                    <option value="6">Design Change</option>
-                                                    <option value="7">New Supplier</option>
-                                                    <option value="8">Machine change</option>
-                                                    <option value="9">Manufacturing Process order change</option>
-                                                    <option value="10">Packing ,Transportation change</option>
-                                                    <option value="11">Die / Mold change</option>
-                                                    <option value="12">Others</option>
-                                                </select>
-                                            </div>
-                                            <div class="col-md-3">
-                                                <div class="form-group mb-0">
-                                                    <label>Part No :</label>
-                                                    <input type="text" class="form-control" id="partno" placeholder="Enter ...">
-                                                </div>
-                                            </div>
-                                            <div class="col-md-3">
-                                                <div class="form-group mb-0">
-                                                    <label>Part Name :</label>
-                                                    <input type="text" class="form-control" id="partname" placeholder="Enter ...">
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
                                     <div>
                                         <div class="row">
                                             <div class="col-md-6">
@@ -336,18 +248,17 @@
                                                     <option value="8">Others</option>
                                                 </select>
                                             </div>
-                                            <div class="col-md-3">
-                                                <div class="form-group">
-                                                    <label>Process Name :</label>
-                                                    <input type="text" id="processname" class="form-control" placeholder="Enter ...">
-                                                </div>
+                                            <div class="col-md-6">
+                                                <label>Related Section :</label>
+                                                <select class="form-control select2" name="dept" style="width: 100%;">
+                                                    <option disabled="disabled" selected="selected">Department</option>
+                                                    <option value="">--- Blank ---</option>
+                                                    @foreach(var dept in ViewBag.Departments){
+                                                        <option>@dept</option>
+                                                    }
+                                                </select>
                                             </div>
-                                            <div class="col-md-3">
-                                                <div class="form-group">
-                                                    <label>Model :</label>
-                                                    <input type="text" class="form-control" id="Model" placeholder="Enter ...">
-                                                </div>
-                                            </div>
+                                            
                                         </div>
                                     </div>
                                     @* <div class="form-group">

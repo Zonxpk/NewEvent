@@ -7,6 +7,14 @@ var table_cr;
 $(document).ready(function () {
     $("body").addClass("sidebar-collapse", 1000);
 
+/* -------------------------------------- Select production ------------------------------------- */
+
+    let prod = $("select[name='prod']");
+    if(prod.val() != "default") GetLineByProduction(prod.val());
+
+    prod.on('change', function() {
+        if(this.value != "default") GetLineByProduction(this.value);
+    });
 /* ----------------------- Add pleaceholder to TNS No ----------------------- */
 
     $("#TNScontrolNo").mask('SS-0000000', {placeholder: "__-_______"});  
@@ -221,3 +229,21 @@ $(document).ready(function () {
     });
 
 });
+
+async function GetLineByProduction(prod){
+    console.log('GetLineByProduction');
+    await $.post(GetLineByProductionPath, ({Production : prod}) ,(res) => { 
+        if(res.status == "success"){
+            $("select[name='line']").empty();
+            $("select[name='line']").append(`<option disabled value="default" selected>Line</option>`);
+            let i = 1;
+            res.data.forEach(line => {
+                if(i++ == 1){
+                    $("select[name='line']").append(new Option(line,line,false,true));
+                }else{
+                    $("select[name='line']").append(new Option(line,line));
+                }
+            });
+        }
+    });
+}

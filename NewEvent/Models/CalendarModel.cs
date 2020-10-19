@@ -40,9 +40,12 @@ namespace NewEvent.Models{
 
         public List<string> GetLineByProduction(string Production){
             try{
-                var sql = $"SELECT line FROM v_line_pro WHERE proddpt_trad='{Production}'";
-                if(Production == "P3") sql += "and proddpt='P3M'";
-                sql += " ORDER BY line ASC";
+                var sql = "";
+                if(Production == "P3A" || Production == "P3M"){
+                    sql = $"SELECT line FROM v_line_pro WHERE proddpt_trad='P3' and proddpt='{Production}' ORDER BY line ASC";
+                }else{
+                    sql = $"SELECT line FROM v_line_pro WHERE proddpt_trad='{Production}' ORDER BY line ASC";
+                }
                 var Lines = DB_Tapics.Database.SqlQuery<string>(sql).ToList();
                 return Lines;
             }catch(Exception err){

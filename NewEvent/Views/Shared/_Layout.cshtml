@@ -210,7 +210,13 @@
 
 
     </style>
-    
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/bootstrap")
+    @Scripts.Render("~/bundles/sweetalert")
+    @Scripts.Render("~/bundles/vue")
+    @Scripts.Render("~/bundles/filepond")
+    @RenderSection("scripts", required: false)
+
 
 </head>
 
@@ -291,20 +297,20 @@
                 <!-- Sidebar Menu -->
                 <nav class="mt-2">
                     <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
-                        @* <li id="menu1" class="nav-item">
-                            <a id="menu1-1" href="@Url.Action("Index", "Home")" class="nav-link ">
-                                <i class="nav-icon fas fa-tachometer-alt"></i>
-                                <p>
-                                    Main menu
-                                </p>
-                            </a>
-                        </li> *@
                         <li id="menu1" class="nav-item">
                             <a id="menu1-1" href="@Url.Action("Index", "Calendar")" class="nav-link ">
                                 <i class="nav-icon fas fa-tachometer-alt"></i>
                                 <p>
-                                    Main menu
+                                    Calendar
                                     @* <span class="right badge badge-danger">New</span> *@
+                                </p>
+                            </a>
+                        </li>
+                        <li id="menu1" class="nav-item">
+                            <a id="menu2-1" href="@Url.Action("Index", "Home")" class="nav-link ">
+                                <i class="nav-icon fas fa-tachometer-alt"></i>
+                                <p>
+                                    Search
                                 </p>
                             </a>
                         </li>
@@ -396,12 +402,7 @@
     </div>
     <!-- ./wrapper -->
     <!-- REQUIRED SCRIPTS -->
-    @Scripts.Render("~/bundles/jquery")
-    @Scripts.Render("~/bundles/bootstrap")
-    @Scripts.Render("~/bundles/vue")
-    @Scripts.Render("~/bundles/filepond")
-    @RenderSection("scripts", required: false)
-
+   
     <!-- filepond css -->
     @* <link href="~/Plugin/filepond/filepond.css" rel="stylesheet"> *@
     <link rel="stylesheet" href="~/tmp/plugins/jquery-ui/jquery-ui.min.css">
