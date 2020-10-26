@@ -5,7 +5,6 @@
     ViewBag.Title = "New Event System | Home";
     List<DepartmentList> DepartmentList = ViewData["DepartmentList"] as List<DepartmentList>;
     List<ProductType> ProductTypes = ViewData["FormProductType"] as List<ProductType>;
-
 }
 <script type="text/javascript">
     Search = '@Url.Action("Search", "Home")';
@@ -15,7 +14,11 @@
     us_dept = '@Session["Department"].ToString()';
     GetLineByProductionPath = '@Url.Action("GetLineByProduction","Calendar")';
     NavigateToDetail = '@Url.Action("Index","Detail")';
+    var DepartmentLists = @Html.Raw(Json.Encode(DepartmentList));
 </script>
+
+<link href="~/tmp/plugins/select2/css/select2.min.css" rel="stylesheet" />
+<script src="~/tmp/plugins/select2/js/select2.full.min.js"></script>
 
 <script src="~/Scripts/Calendar/Calendar.js?date='@DateTime.Now.ToString("yyMMddHH")'"></script>
 <script src="~/tmp/plugins/summernote/summernote-bs4.min.js"></script>
@@ -43,33 +46,33 @@
     }
 
     .bg-warning > i {
-        color:white;
+        color: white;
     }
 
     span.info-box-number {
         font-size: 16.5px;
     }
 
-    .btn-left{
+    .btn-left {
         border-radius: 5px 0px 0px 5px;
     }
 
-    .btn-right{
+    .btn-right {
         border-radius: 0px 5px 5px 0px;
     }
 
-    .main-sidebar , .main-header{
+    .main-sidebar, .main-header {
         z-index: 20 !important;
     }
 
     .fc-daygrid-body, .fc-scrollgrid-sync-table, .fc-col-header {
         width: 100% !important;
     }
-    
+
     .btn-group span {
         font-family: 'Font Awesome 5 Free' !important;
     }
-    
+
     ngb-popover-window {
         will-change: unset !important;
     }
@@ -105,9 +108,9 @@
     <section class="content">
         <div class="container-fluid">
             <div class="row">
-                @Html.Partial("NewEvent",ProductTypes)
+                @Html.Partial("NewEvent", ProductTypes)
             </div>
-            
+
             <div class="card card-primary card-outline">
                 <div class="card-body">
                     <div class="row">

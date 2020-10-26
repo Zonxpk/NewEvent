@@ -26,6 +26,29 @@ $(document).ready(function () {
         if(this.value != "default") GetLineByProduction(this.value);
     });
 
+    $('#email_to').select2({
+        templateSelection : function (tag, container){
+            var $option = $(`option:contains(${tag.id})`);
+            if ($option.attr('locked')){
+                $(container).addClass('locked-tag');
+                tag.locked = true; 
+            }else{
+                tag.locked = false; 
+            }
+            return tag.text;
+        },
+    });
+
+    $('#add_mail').on('click', function() {
+        var mail = $('[name="mt_mail"]');
+        if(mail.val() != ""){
+            var newOption = new Option(mail.val(), mail.val(), false, true);
+            $('#email_to').append(newOption).trigger('change');
+        }
+        mail.val(null);
+
+    });
+
     var calendar = new FullCalendar.Calendar(calendarEl, {
         initialView: 'dayGridMonth',
         contentHeight: 'auto',
@@ -121,7 +144,7 @@ $(document).ready(function () {
                 targets: 3,
                 render: function (data) {
                     if(data == null){
-                        return '<button type="button" id="remove_detail" value="detail" class="btn btn-danger"><i class="fa fa-trash"></i>&nbsp;&nbsp;Remove</button>';
+                        return '<button type="button" id="remove_detail" value="detail" class="btn btn-danger btn-block"><i class="fa fa-trash"></i>&nbsp;&nbsp;Remove</button>';
                     }
                     return data;
                 }
@@ -140,156 +163,47 @@ $(document).ready(function () {
             de_data.push(e.value);
             e.value = null;
         })
-        table_dt.row.add([de_data[0], de_data[1], de_data[2], null]).draw(false);;
-
+        if(!de_data.includes("")) table_dt.row.add([de_data[0], de_data[1], de_data[2], null]).draw(false);
     });
 
     $('#detail_event_table').on( 'click', '#remove_detail', function () {
         table_dt.row($(this).closest("tr")).remove().draw();
-    } );
-
-    
-
-    return;
-    $('#calendar').fullCalendar({
-        timeFormat: 'H:mm',
-        editable: true,      
-        droppable: true, // this allows things to be dropped onto the calendar !!!
-        selectable: true,
-        lang: 'en',
-        views: {
-            month: {
-                eventLimit: 3,
-                eventLimitText: "Something"
-            },
-            day: {
-                eventLimit: 6,
-                eventLimitText: "Something"
-            },
-            week: {
-                eventLimit: 8,
-                eventLimitText: "Something"
-            },
-        },
-
-        // themeSystem: 'bootstrap', 
-        //eventLimit: 3, // If you set a number it will hide the itens
-        //eventLimitText: "Something", // Default is `more` (or "more" in the lang you pick in the option)
-      
-        header: {
-            left: 'prev,next today',
-            center: 'title',
-            right: 'month,basicWeek,basicDay,listDay'
-        },
-
-        eventClick: function (info) {
-            $('#modeledit').modal('show');
-        },
-        dayClick: function (startDate, endDate, jsEvent, view, resource) {
-            $('#modeladd').modal('show');
-            console.log(moment(startDate).format('YYYY-MM-DD HH:mm'));
-            console.log(moment(endDate).format('YYYY-MM-DD HH:mm'));
-        },
-        select: function (startDate, endDate, jsEvent, view, resource) {
-                  
-
-        },
-        eventRender: function (eventObj, element, view) {
-            console.log(view.type);
-            if (view.type == "basicWeek") {
-
-                element.html("<div>" + "TITLE1 :" + eventObj.title + "<br></div>");
-                element.popover({
-                    title: eventObj.title + "12",
-                    content: eventObj.title + " EIEI",
-                    trigger: 'hover',
-                    placement: 'top',
-                    container: 'body'
-                });
-            }
-            else if (view.type == "basicDay") {
-                element.html("<div>" + "TITLE2 :" + eventObj.title + "<br></div>");
-                element.popover({
-                    title: eventObj.title + " 34",
-                    content: eventObj.title + " EIEI",
-                    trigger: 'hover',
-                    placement: 'top',
-                    container: 'body'
-                });
-            }
-            else if (view.type == "month") {
-                element.html("<div>" + "TITLE3 :" + eventObj.title + "<br></div>");
-                element.popover({
-                    title: eventObj.title + " 56",
-                    content: eventObj.title + " EIEI",
-                    trigger: 'hover',
-                    placement: 'top',
-                    container: 'body'
-                });
-            } 
-        
-        
-        },
-
-        events: [{
-            title: 'All Day Event',
-            id:'55',
-            start: new Date(y, m, 1)
-        },{
-            title: 'Long Event',
-            start: new Date(y, m, d - 5),
-            end: new Date(y, m, d - 2)
-        },{
-            id: 999,
-            title: 'Repeating Event',
-            start: new Date(y, m, d - 3, 16, 0),
-            allDay: false
-        },{
-            id: 999,
-            title: 'Repeating Event',
-            start: new Date(y, m, d + 4, 16, 0),
-            allDay: false
-        },{
-            title: 'Meeting',
-            start: new Date(y, m, d, 10, 30),
-            allDay: false
-        },{
-            title: 'Meeting2',
-            start: new Date(y, m, d, 11, 30),
-            allDay: false
-        },{
-            title: 'Meeting3',
-            start: new Date(y, m, d, 12, 30),
-            allDay: false
-        },{
-            title: 'Meeting4',
-            start: new Date(y, m, d, 13, 30),
-            allDay: false
-        },{
-            title: 'Meeting5',
-            start: new Date(y, m, d, 14, 30),
-            allDay: false
-        },{
-            title: 'Meeting6',
-            start: new Date(y, m, d, 15, 30),
-            allDay: false
-        },{
-            title: 'Lunch',
-            start: new Date(y, m, d, 12, 0),
-            end: new Date(y, m, d, 14, 0),
-            allDay: false
-        },{
-            title: 'Birthday Party',
-            start: new Date(y, m, d + 1, 19, 0),
-            end: new Date(y, m, d + 1, 22, 30),
-            allDay: false
-        },{
-            title: 'Click for Google',
-            start: new Date(y, m, 28),
-            end: new Date(y, m, 29),
-            url: 'http://google.com/'
-        }]
     });
+
+    /* -------------------------------------------------------------------------- */
+    /*                        Resubmit Department checkbox                        */
+    /* -------------------------------------------------------------------------- */
+
+    $.each(DepartmentLists, (key,val) => {
+        if($(`.rs-${val.Name}`).length == $(`.rs-${val.Name}:checked`).length){
+            $(`#rs-${val.Name}`).prop('checked', true);
+        relatedValidate();
+    }
+        $(`#rs-${val.Name}`).change(function(e) {
+                $(`.rs-${val.Name}`).each(function() {
+                    this.checked = (e.target.checked) ? true : false;
+                });
+            relatedValidate();
+        });
+
+        $(`.rs-${val.Name}`).click(function () {
+            if($(this).is(":checked")) {
+                var isAllChecked = 0;
+
+                $(`.rs-${val.Name}`).each(function() {
+                    if (!this.checked) isAllChecked = 1;
+                });
+
+                if(isAllChecked == 0) {
+                $(`#rs-${val.Name}`).prop("checked", true);
+                }     
+            }else{
+                $(`#rs-${val.Name}`).prop("checked", false); 
+            }
+            relatedValidate();
+        });
+    });
+    
 });
 
 function auto_grow(element) {

@@ -1,7 +1,32 @@
-﻿<style>
+﻿@using NewEvent.Models
+
+@{
+    List<DepartmentList> DepartmentList = ViewData["DepartmentList"] as List<DepartmentList>;
+}
+
+<style>
     .modal-content{
         box-shadow: none;
     }
+
+    fieldset.group  { 
+        border-radius: 7px;
+        margin: 0; 
+        padding: 0; 
+        margin-bottom: 1.25em; 
+        padding: .125em; 
+    } 
+
+    fieldset.group legend { 
+        width:inherit; /* Or auto */
+        border-bottom:none;
+        margin: 0; 
+        padding: 0; 
+        font-weight: bold; 
+        margin-left: 20px; 
+        font-size: 100%; 
+        color: black; 
+    } 
 
     ul.checkbox  { 
         margin: 0; 
@@ -38,15 +63,28 @@
     }
 
     .modal-lg, .modal-xl {
-        max-width: 1030px;
+        max-width: 900px;
     }
 
     #for_datepicker > div.daterangepicker.ltr.single.opensright.show-calendar.drop-up {
         top: 34.333px !important;
     }
-    #detail_event_table > tbody > tr > td:nth-child(2){
+    @* #detail_event_table > tbody > tr > td:nth-child(2){
         text-align: left;
+    } *@
+
+    .select2-selection__choice{
+        color: #3c3c3c !important;
     }
+
+    .locked-tag .select2-selection__choice__remove{
+        display: none!important;
+    }
+
+    .select2-dropdown {
+        display: none !important;
+    }
+
 
 </style>
 
@@ -172,11 +210,11 @@
                                 <thead>
                                     <tr>
                                         <th width="20%">Model No.</th>
-                                        <th width="50%">Event</th>
+                                        <th width="47%">Event</th>
                                         <th width="15%">Q'ty</th>
                                         @* <th width="2">NG Q'ty</th>
                                         <th width="46">Defect Detail</th> *@
-                                        <th width="15%">More</th>
+                                        <th width="18%">More</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -189,11 +227,52 @@
                                         <td><textarea name="dt_defect" class="form-control" rows="1" required></textarea></td> *@
                                         @* <td><textarea name="dt_fg" class="form-control" rows="1" required></textarea></td> *@
                                         @* <td><textarea name="dt_percent_ng" class="form-control" rows="1" required></textarea></td> *@
-                                        <td><button type="button" id="add_detail" value="detail" class="btn btn-success"><i class="fa fa-plus"></i>&nbsp;&nbsp;Add</button></td>
+                                        <td><button type="button" id="add_detail" value="detail" class="btn btn-success btn-block"><i class="fa fa-plus"></i>&nbsp;&nbsp;Add</button></td>
                                     </form>
                                     </tr>
                                 </tbody>
                         </table>
+                    </fieldset>
+                    <fieldset data-step="3">
+                        @{
+                        try{
+                            foreach(var DepartmentGroup in DepartmentList){
+                                <fieldset class="group border p-2"> 
+                                    @{var departMentGroupName = DepartmentGroup.Name.Replace("_", " ");}
+                                    <legend class="w-auto"> <input type="checkbox" class="checkAll qForm" id="rs-@DepartmentGroup.Name"/> <label for="rs-@DepartmentGroup.Name" style="display: contents;">@departMentGroupName</label></legend> 
+                                    <ul class="checkbox"> 
+                                        @foreach(var Department in DepartmentGroup.Department){
+                                            <li><input type="checkbox" class="rsm_related_radio checkSingle rs-@DepartmentGroup.Name qForm" id="rs-@Department.ID" value="1" name="@Department.Name" /><label for="rs-@Department.ID">@Department.Name</label></li> 
+                                        }
+                                    </ul> 
+                                </fieldset> 
+                            }
+                        }catch(Exception err){
+
+                        }
+                        }
+                    </fieldset>
+                    <fieldset data-step="4">
+                        <div class="row">
+                            <label class="col-sm-2 col-form-label">Send email to </span></label>
+                            <div class="col-sm-10 col-form-label">
+                                <div class="form-group">
+                                    <select class="form-control" id="email_to" multiple="multiple" style="width:100%">
+                                        <option locked="locked" selected="selected">IT</option>
+                                        <option locked="locked" selected="selected">PC1</option>
+                                    </select>        
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <label class="col-sm-2 col-form-label">Add email (option) </span></label>
+                            <div class="col-sm-8">
+                                <input name="mt_mail" class="form-control form-control-sm" rows="1" placeholder="example@email.thns.co.th" required></input>
+                            </div>
+                            <div class="col">
+                                <button type="button" id="add_mail" value="mail" class="btn btn-sm btn-block btn-success"><i class="fa fa-plus"></i>&nbsp;&nbsp;Add</button>
+                            </div>
+                        </div>
                     </fieldset>
                     </form>
                 </div>
@@ -208,7 +287,7 @@
                 <button type="button" class="btn btn-success" data-step-to="next">
                     Next
                 </button>
-                <button type="submit" form="resubmit_form rsm-submit" class="btn btn-info rsm_submit">
+                <button type="submit" form="resubmit_form rsm-submit" class="btn btn-info rsm_submit" data-dismiss="modal">
                     Submit
                 </button>
             </div>

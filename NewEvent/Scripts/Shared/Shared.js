@@ -144,6 +144,22 @@ function NoPermissionAlert(){
     })
 }
 
+function AddLocalStorageItem(id,item){
+    let items = JSON.parse(localStorage.getItem(id) || "[]");
+    items.push(item);
+    localStorage.setItem(id, JSON.stringify(items));
+}
+
+function RemoveLocalStorageItem(id,item){
+    let items = JSON.parse(localStorage.getItem(id) || "[]");
+    items = items.filter(e => e !== item);
+    localStorage.setItem(id, JSON.stringify(items));
+}
+
+function GetLocalStorageItem(id){
+    return JSON.parse(localStorage.getItem(id) || "[]");
+}
+
 $(() => {
     var NoPermissionDetected = false;
     if(NoPermissionDetected) NoPermissionAlert();
